@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="ort.proyectofinal.AgregarEvento">
+
+
+    <EditText
+        android:id="@+id/nombre"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF6D00"
+        android:textColorHint="#FF6D00"
+        android:hint="Nombre" />
+
+    <EditText
+        android:id="@+id/lugar"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF6D00"
+        android:textColorHint="#FF6D00"
+        android:hint="Lugar" />
+
+    <EditText
+        android:id="@+id/descripcion"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF6D00"
+        android:textColorHint="#FF6D00"
+        android:hint="Descripción" />
+    <DatePicker
+        android:calendarViewShown="false"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:textColor="#FF6D00"
+        android:textColorHint="#FF6D00"
+        android:id="@+id/datePicker" />
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#FF6D00"
+        android:textColorHint="#FF6D00"
+        android:onClick="btnCrear"
+        android:text="Crear"/>
+
+
+</LinearLayout>
