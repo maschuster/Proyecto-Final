@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ public class ListarEventos extends AppCompatActivity {
     ListView listVW;
     ArrayList<Evento> eventos;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +42,18 @@ public class ListarEventos extends AppCompatActivity {
         descripcion = (EditText) findViewById(R.id.descripcion);
         String url = "http://10.152.2.37/WebService/refresheventos.php";
         new EventosTask().execute(url);
+
+        listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
+                Intent intent = new Intent();
+                Evento e = eventos.get(position);
+                intent.putExtra("evento", e);
+                setResult(RESULT_OK,intent);
+                finish();
+            }
+        });
     }
+
 
     public void btnCrear (View view)
     {

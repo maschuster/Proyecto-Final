@@ -1,9 +1,11 @@
 package ort.proyectofinal;
 
+import java.io.Serializable;
+
 /**
  * Created by Schuster on 25/05/2016.
  */
-public class Evento {
+public class Evento implements Serializable{
     int idNombre;
     String fecha;
     String descripcion;
