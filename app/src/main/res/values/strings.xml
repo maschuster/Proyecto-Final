@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ProyectoFinal</string>
+    <string name="title_activity_main_evento">MainEvento</string>
 </resources>
