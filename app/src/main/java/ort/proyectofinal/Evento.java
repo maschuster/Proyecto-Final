@@ -6,26 +6,26 @@ import java.io.Serializable;
  * Created by Schuster on 25/05/2016.
  */
 public class Evento implements Serializable{
-    int idNombre;
+    int idEvento;
     String fecha;
     String descripcion;
     String nombre;
     String lugar;
 
-    public Evento(int idNombre, String fecha, String descripción, String nombre, String lugar) {
-        this.idNombre = idNombre;
+    public Evento(int idEvento, String fecha, String descripción, String nombre, String lugar) {
+        this.idEvento = idEvento;
         this.fecha = fecha;
         this.descripcion = descripción;
         this.nombre = nombre;
         this.lugar = lugar;
     }
 
-    public int getIdNombre() {
-        return idNombre;
+    public int getIdEvento() {
+        return idEvento;
     }
 
-    public void setIdNombre(int idNombre) {
-        this.idNombre = idNombre;
+    public void setIdEvento(int idEvento) {
+        this.idEvento = idEvento;
     }
 
     public String getFecha() {

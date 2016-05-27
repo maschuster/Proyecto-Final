@@ -64,7 +64,7 @@ public class AgregarEvento extends AppCompatActivity {
             popup(mensaje);
         }else{
             OkHttpClient client = new OkHttpClient();
-            String url ="http://10.152.2.37/WebService/crearevento.php" + "?nombre="+ nombre + "&" + "fecha="+ fecha + "&" + "lugar="+ lugar + "&" + "descripcion="+ descripcion;
+            String url ="http://10.152.2.5/agregarevento.php" + "?Nombre="+ nombre + "&" + "Fecha="+ fecha + "&" + "Lugar="+ lugar + "&" + "escripcion="+ descripcion;
             Request request = new Request.Builder()
                     .url(url)
                     .build();

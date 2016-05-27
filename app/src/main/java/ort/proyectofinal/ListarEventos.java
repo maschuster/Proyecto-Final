@@ -24,8 +24,7 @@ import java.util.ArrayList;
 
 public class ListarEventos extends AppCompatActivity {
 
-    EditText nombre, fecha, lugar, descripcion;
-    TextView TVnombre, TVfecha, TVlugar, TVdescripcion;
+    TextView TVnombre,TVfecha, TVlugar, TVdescripcion;
     ListView listVW;
     ArrayList<Evento> eventos;
 
@@ -34,22 +33,22 @@ public class ListarEventos extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar_eventos);
-        nombre = (EditText) findViewById(R.id.nombre);
-        fecha = (EditText) findViewById(R.id.fecha);
-        lugar = (EditText) findViewById(R.id.lugar);
+        TVnombre = (TextView) findViewById(R.id.nombre);
+        TVfecha = (TextView) findViewById(R.id.fecha);
+        TVlugar = (TextView) findViewById(R.id.lugar);
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
-        descripcion = (EditText) findViewById(R.id.descripcion);
-        String url = "http://10.152.2.37/WebService/refresheventos.php";
+        TVdescripcion = (EditText) findViewById(R.id.descripcion);
+        String url = "http://10.152.2.5/refresheventos.php";
         new EventosTask().execute(url);
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
-                Intent intent = new Intent();
+
+                Intent intent = new Intent(ListarEventos.this, MainEvento.class);
                 Evento e = eventos.get(position);
                 intent.putExtra("evento", e);
-                setResult(RESULT_OK,intent);
-                finish();
+                startActivity(intent);
             }
         });
     }
@@ -65,10 +64,11 @@ public class ListarEventos extends AppCompatActivity {
         private OkHttpClient client = new OkHttpClient();
 
         @Override
-        protected void onPostExecute(ArrayList<Evento> eventos) {
-            super.onPostExecute(eventos);
-            if (!eventos.isEmpty()) {
-                EventosAdapter adapter = new EventosAdapter(getApplicationContext(),eventos);
+        protected void onPostExecute(ArrayList<Evento> eventosResult) {
+            super.onPostExecute(eventosResult);
+            if (!eventosResult.isEmpty()) {
+                eventos = eventosResult;
+                EventosAdapter adapter = new EventosAdapter(getApplicationContext(),eventosResult);
                 listVW.setAdapter(adapter);
             }
         }
@@ -94,13 +94,13 @@ public class ListarEventos extends AppCompatActivity {
             JSONArray jsonEventos = new JSONArray(JSONstr);
             for (int i = 0; i < jsonEventos.length(); i++) {
                 JSONObject jsonResultado = jsonEventos.getJSONObject(i);
-                int idNombre = jsonResultado.getInt("idNombre");
+                int idEvento = jsonResultado.getInt("idEvento");
                 String nombre = jsonResultado.getString("nombre");
                 String fecha = jsonResultado.getString("fecha");
                 String descripcion = jsonResultado.getString("descripcion");
                 String lugar = jsonResultado.getString("lugar");
 
-                Evento e = new Evento(idNombre,fecha,lugar,descripcion,nombre);
+                Evento e = new Evento(idEvento,fecha,lugar,descripcion,nombre);
                 eventos.add(e);
             }
             return eventos;

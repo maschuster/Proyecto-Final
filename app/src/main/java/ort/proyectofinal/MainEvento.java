@@ -55,7 +55,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
-        toolbar.setTitle(e.getIdNombre());
+        toolbar.setTitle(e.getNombre());
     }
 
 
