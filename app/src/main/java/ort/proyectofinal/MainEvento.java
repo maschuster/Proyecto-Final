@@ -32,6 +32,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback 
     GoogleMap map;
     Evento e;
     Toolbar toolbar;
+    TextView TVdescripcion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback 
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
         toolbar.setTitle(e.getNombre());
+
     }
 
 

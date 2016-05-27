@@ -38,4 +38,20 @@
         android:layout_width="200dp"
         android:layout_height="200dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="#FF6D00"
+        android:hint="fecha"
+        android:id="@+id/fecha"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="#FF6D00"
+        android:hint="descripcion"
+        android:id="@+id/descripcion"/>
+
 </android.support.design.widget.CoordinatorLayout>

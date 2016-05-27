@@ -1,6 +1,7 @@
 package ort.proyectofinal;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
@@ -9,9 +10,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -45,8 +53,7 @@ public class AgregarEvento extends AppCompatActivity {
     }
 
 
-    public void btnCrear (View view)
-    {
+    public void btnCrear (View view) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -63,16 +70,29 @@ public class AgregarEvento extends AppCompatActivity {
             mensaje = "Debe llenar todos los campos";
             popup(mensaje);
         }else{
-            OkHttpClient client = new OkHttpClient();
-            String url ="http://10.152.2.5/agregarevento.php" + "?Nombre="+ nombre + "&" + "Fecha="+ fecha + "&" + "Lugar="+ lugar + "&" + "escripcion="+ descripcion;
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
             try {
+                OkHttpClient client = new OkHttpClient();
+                String url ="http://10.152.2.5/agregarevento.php";
+                JSONObject json = new JSONObject();
+                json.put("nombre", nombre);
+                json.put("fecha", fecha);
+                json.put("lugar", lugar);
+                json.put("descripcion", descripcion);
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+
                 Response response = client.newCall(request).execute();
-            } catch (IOException e) {
+                Log.d("Response", response.body().string());
+            } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
             }
+            //Intent intent = new Intent(this, ListarEventos.class);
+            //startActivity(intent);
         }
     }
 }
