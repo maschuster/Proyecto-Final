@@ -72,7 +72,7 @@ public class AgregarEvento extends AppCompatActivity {
         }else{
             try {
                 OkHttpClient client = new OkHttpClient();
-                String url ="http://10.152.2.5/agregarevento.php";
+                String url ="http://192.168.0.7/agregarevento.php";
                 JSONObject json = new JSONObject();
                 json.put("nombre", nombre);
                 json.put("fecha", fecha);

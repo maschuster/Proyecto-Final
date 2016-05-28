@@ -19,11 +19,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListarEventos" />
-        <activity android:name=".AgregarEvento"></activity>
+        <activity android:name=".AgregarEvento" />
         <activity
             android:name=".MainEvento"
             android:label="@string/title_activity_main_evento"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

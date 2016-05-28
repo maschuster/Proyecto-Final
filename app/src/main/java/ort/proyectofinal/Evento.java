@@ -12,10 +12,10 @@ public class Evento implements Serializable{
     String nombre;
     String lugar;
 
-    public Evento(int idEvento, String fecha, String descripción, String nombre, String lugar) {
+    public Evento(int idEvento, String nombre, String fecha, String descripcion, String lugar) {
         this.idEvento = idEvento;
         this.fecha = fecha;
-        this.descripcion = descripción;
+        this.descripcion = descripcion;
         this.nombre = nombre;
         this.lugar = lugar;
     }
@@ -40,8 +40,8 @@ public class Evento implements Serializable{
         return descripcion;
     }
 
-    public void setDescripción(String descripción) {
-        this.descripcion = descripción;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public String getNombre() {

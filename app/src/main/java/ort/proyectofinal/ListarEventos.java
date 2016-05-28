@@ -39,16 +39,15 @@ public class ListarEventos extends AppCompatActivity {
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
-        String url = "http://10.152.2.5/refresheventos.php";
+        String url = "http://192.168.0.7/refresheventos.php";
         new EventosTask().execute(url);
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
-
                 Intent intent = new Intent(ListarEventos.this, MainEvento.class);
                 Evento e = eventos.get(position);
                 intent.putExtra("evento", e);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
     }
@@ -100,7 +99,7 @@ public class ListarEventos extends AppCompatActivity {
                 String descripcion = jsonResultado.getString("descripcion");
                 String lugar = jsonResultado.getString("lugar");
 
-                Evento e = new Evento(idEvento,fecha,lugar,descripcion,nombre);
+                Evento e = new Evento(idEvento,nombre,fecha,descripcion,lugar);
                 eventos.add(e);
             }
             return eventos;

@@ -10,6 +10,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -23,7 +25,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -33,13 +39,17 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback 
     Evento e;
     Toolbar toolbar;
     TextView TVdescripcion;
+    CalendarView calendarioVW;
+    DatePicker Datepicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_evento);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        TextView TVdescripcion = (TextView) findViewById(R.id.descripcion);
+        CalendarView CalendarioVW = (CalendarView) findViewById(R.id.calendarView);
+        DatePicker Datepicker = (DatePicker) findViewById(R.id.datePicker);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,14 +61,24 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+        Date date = null;
+        try {
+            date = (Date)formatter.parse(e.getFecha());
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
+        long mills = date.getTime();
+        calendarioVW.setDate(mills);
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
         toolbar.setTitle(e.getNombre());
-
+        setSupportActionBar(toolbar);
+        TVdescripcion.setText(e.getDescripcion());
     }
+
+
 
 
     @Override
@@ -74,7 +94,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback 
             new GeolocalizacionTask().execute(dirStr);
         }
     }
-
 
     // Utiliza la clase android.location.Geocoder
     // Parametros
