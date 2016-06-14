@@ -11,49 +11,57 @@
     tools:context="ort.proyectofinal.AgregarEvento">
 
 
-    <EditText
-        android:id="@+id/nombre"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FF6D00"
-        android:textColorHint="#FF6D00"
-        android:hint="Nombre" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/lugar"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FF6D00"
-        android:textColorHint="#FF6D00"
-        android:hint="Lugar" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/nombre"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF6D00"
+                android:textColorHint="#FF6D00"
+                android:hint="Nombre" />
 
-    <EditText
-        android:id="@+id/descripcion"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FF6D00"
-        android:textColorHint="#FF6D00"
-        android:hint="Descripción" />
-    <DatePicker
-        android:calendarViewShown="false"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:textColor="#FF6D00"
-        android:textColorHint="#FF6D00"
-        android:id="@+id/datePicker" />
+            <EditText
+                android:id="@+id/lugar"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF6D00"
+                android:textColorHint="#FF6D00"
+                android:hint="Lugar" />
 
-    <Button
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#FF6D00"
-        android:textColorHint="#FF6D00"
-        android:onClick="btnCrear"
-        android:text="Crear"/>
+            <EditText
+                android:id="@+id/descripcion"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF6D00"
+                android:textColorHint="#FF6D00"
+                android:hint="Descripción" />
 
+            <DatePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF6D00"
+                android:textColorHint="#FF6D00"
+                android:id="@+id/datePicker" />
 
+            <Button
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FF6D00"
+                android:textColorHint="#FF6D00"
+                android:onClick="btnCrear"
+                android:text="Crear"/>
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

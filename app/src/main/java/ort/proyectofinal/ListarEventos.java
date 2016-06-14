@@ -39,7 +39,7 @@ public class ListarEventos extends AppCompatActivity {
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
-        String url = "http://192.168.0.7/refresheventos.php";
+        String url = "http://proyectofinalsk.hol.es/refresheventos.php";
         new EventosTask().execute(url);
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){

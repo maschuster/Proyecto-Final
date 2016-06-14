@@ -54,46 +54,39 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
     GoogleMap map;
     Evento e;
     Toolbar toolbar;
-    TextView TVdescripcion;
-    CalendarView calendarioVW;
-    DatePicker Datepicker;
+    TextView TVdescripcion, TVfecha;
     private FABToolbarLayout layout;
     private View one, two, three, four;
     private ListView list;
     private View fab;
     ArrayList<Objeto> objetos;
-    String url = "http://192.168.0.7/refreshobjetos.php";
+    String url = "http://proyectofinalsk.hol.es/refreshobjetos.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_evento);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        TextView TVdescripcion = (TextView) findViewById(R.id.descripcion);
-        CalendarView CalendarioVW = (CalendarView) findViewById(R.id.calendarView);
-        DatePicker Datepicker = (DatePicker) findViewById(R.id.datePicker);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        TVdescripcion = (TextView) findViewById(R.id.descripcion);
+        TVfecha = (TextView) findViewById(R.id.fecha);
+
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         TVdescripcion.setText(e.getDescripcion());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        String fecha = e.getFecha().substring(0,10);
+        TVfecha.setText(fecha);
         String dirStr = e.getLugar();
         if (!dirStr.isEmpty()) {
             new GeolocalizacionTask().execute(dirStr);
         }
-        /*SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-        Date date = null;
-        try {
-            date = (Date)formatter.parse(e.getFecha());
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
-        long mills = date.getTime();
-        calendarioVW.setDate(mills);*/
-
         objetos = new ArrayList<>();
         new ObjetosTask().execute(url);
         layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
@@ -162,7 +155,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
         try {
             OkHttpClient client = new OkHttpClient();
-            String url ="http://192.168.0.7/agregarobjeto.php";
+            String url ="http://proyectofinalsk.hol.es/agregarobjeto.php";
             JSONObject json = new JSONObject();
             json.put("nombre", nombre);
             json.put("precio", precio);
