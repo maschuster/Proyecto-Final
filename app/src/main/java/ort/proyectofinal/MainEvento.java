@@ -1,25 +1,21 @@
 package ort.proyectofinal;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CalendarView;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.google.android.gms.maps.CameraUpdate;
@@ -38,13 +34,10 @@ import com.squareup.okhttp.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -56,10 +49,11 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
     Toolbar toolbar;
     TextView TVdescripcion, TVfecha;
     private FABToolbarLayout layout;
-    private View one, two, three, four;
-    private ListView list;
+    private View salirfab, agregarobjetofab, three, four;
+    private ListView list, listpersonas;
     private View fab;
     ArrayList<Objeto> objetos;
+    ArrayList<Persona> personas;
     String url = "http://proyectofinalsk.hol.es/refreshobjetos.php";
 
     @Override
@@ -79,6 +73,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         TVdescripcion.setText(e.getDescripcion());
+        listpersonas = (ListView) findViewById(R.id.listpersonas);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         String fecha = e.getFecha().substring(0,10);
@@ -89,15 +84,16 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         }
         objetos = new ArrayList<>();
         new ObjetosTask().execute(url);
+        new PersonasTask().execute();
         layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
-        one = findViewById(R.id.one);
-        two = findViewById(R.id.two);
+        salirfab = findViewById(R.id.salirfab);
+        agregarobjetofab = findViewById(R.id.agregarobjetofab);
         three = findViewById(R.id.three);
         four = findViewById(R.id.four);
         list = (ListView) findViewById(R.id.list);
         fab = findViewById(R.id.fabtoolbar_fab);
-        one.setOnClickListener(this);
-        two.setOnClickListener(this);
+        salirfab.setOnClickListener(this);
+        agregarobjetofab.setOnClickListener(this);
         three.setOnClickListener(this);
         four.setOnClickListener(this);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -109,15 +105,22 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
     }
 
 
-
-
-    @Override
-    public void onBackPressed() {
-        layout.hide();
-    }
     @Override
     public void onClick(View v) {
-        showChangeLangDialog();
+        switch (v.getId()) {
+            case R.id.salirfab:
+                layout.hide();
+                break;
+            case R.id.agregarobjetofab:
+                showChangeLangDialog();
+                break;
+            case R.id.three:
+                showChangeLangDialogPersona();
+                break;
+            case R.id.four:
+                Toast.makeText(this, "Sin Acciones", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
     public void showChangeLangDialog() {
 
@@ -134,7 +137,33 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
-                AgregarObjetoSQL(nombre,precio);
+                final int idEvento = e.getIdEvento();
+                AgregarObjetoSQL(nombre,precio,idEvento);
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
+    public void showChangeLangDialogPersona() {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.agregar_objeto, null);
+        dialogBuilder.setView(dialogView);
+
+        dialogBuilder.setTitle("Agregar Nueva Persona");
+        dialogBuilder.setMessage("Ingrese los datos");
+        dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
+                final String nombre = edt.getText().toString();
+                final int idEvento = e.getIdEvento();
+                AgregarPersonaSQL(nombre,idEvento);
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -147,7 +176,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
 
 
-    public void AgregarObjetoSQL (String nombre, int precio) {
+    public void AgregarObjetoSQL (String nombre, int precio, int idEvento) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -159,6 +188,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             JSONObject json = new JSONObject();
             json.put("nombre", nombre);
             json.put("precio", precio);
+            json.put("idEvento", idEvento);
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
@@ -222,6 +252,78 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
     }
 
 
+    public void AgregarPersonaSQL (String nombre, int idEvento) {
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
+        try {
+            OkHttpClient client = new OkHttpClient();
+            String url ="http://proyectofinalsk.hol.es/agregarpersona.php";
+            JSONObject json = new JSONObject();
+            json.put("nombre", nombre);
+            json.put("idEvento", idEvento);
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            Log.d("Response", response.body().string());
+        } catch (IOException | JSONException e) {
+            Log.d("Error", e.getMessage());
+        }
+        new ObjetosTask().execute(url);
+
+    }
+    private class PersonasTask extends AsyncTask<String, Void, ArrayList<Persona>> {
+        private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPostExecute(ArrayList<Persona> personasResult) {
+            super.onPostExecute(personasResult);
+            if (!personasResult.isEmpty()) {
+                personas = personasResult;
+                PersonaAdapter adapter = new PersonaAdapter(getApplicationContext(),personasResult);
+                listpersonas.setAdapter(adapter);
+            }
+        }
+
+        @Override
+        protected ArrayList<Persona> doInBackground(String... params) {
+            String url ="http://proyectofinalsk.hol.es/refreshpersonas.php";
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                return parsearResultado(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new ArrayList<Persona>();
+            }
+        }
+
+        ArrayList<Persona> parsearResultado(String JSONstr) throws JSONException {
+            ArrayList<Persona> personas = new ArrayList<>();
+            JSONArray jsonPersonas = new JSONArray(JSONstr);
+            for (int i = 0; i < jsonPersonas.length(); i++) {
+                JSONObject jsonResultado = jsonPersonas.getJSONObject(i);
+                int idPersona = jsonResultado.getInt("idPersona");
+                String nombre = jsonResultado.getString("nombre");
+
+                Persona p = new Persona(idPersona,nombre);
+                personas.add(p);
+            }
+            return personas;
+        }
+
+    }
 
 
     @Override

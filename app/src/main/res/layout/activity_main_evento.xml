@@ -59,20 +59,12 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/one"
+                android:id="@+id/four"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:scaleType="centerInside"
-                android:src="@drawable/abc_ic_menu_copy_mtrl_am_alpha"/>
-
-            <ImageView
-                android:id="@+id/two"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:scaleType="centerInside"
-                android:src="@drawable/abc_ic_menu_paste_mtrl_am_alpha"/>
+                android:src="@drawable/abc_ic_menu_cut_mtrl_alpha"/>
 
             <ImageView
                 android:id="@+id/three"
@@ -80,15 +72,23 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:scaleType="centerInside"
-                android:src="@drawable/abc_ic_menu_selectall_mtrl_alpha"/>
+                android:src="@drawable/ic_person_add_black_24dp"/>
 
             <ImageView
-                android:id="@+id/four"
+                android:id="@+id/agregarobjetofab"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:scaleType="centerInside"
-                android:src="@drawable/abc_ic_menu_cut_mtrl_alpha"/>
+                android:src="@drawable/ic_add_shopping_cart_black_24dp"/>
+
+            <ImageView
+                android:id="@+id/salirfab"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_clear_black_24dp"/>
 
         </LinearLayout>
 
