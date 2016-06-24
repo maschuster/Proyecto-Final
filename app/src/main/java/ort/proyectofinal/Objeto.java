@@ -8,7 +8,15 @@ public class Objeto {
     int idObjeto;
     String nombre;
     int precio;
+    boolean checked;
 
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 
     public Objeto(String nombre, int precio, int idobjeto) {
         this.nombre = nombre;

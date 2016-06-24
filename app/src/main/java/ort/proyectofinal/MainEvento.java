@@ -220,7 +220,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         protected ArrayList<Objeto> doInBackground(String... params) {
 
             Request request = new Request.Builder()
-                    .url(url+"refreshobjetos.php")
+                    .url(url+"refreshobjetos.php"+"?idEvento="+e.getIdEvento())
                     .build();
             try {
                 Response response = client.newCall(request).execute();
