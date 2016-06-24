@@ -39,7 +39,7 @@ public class ListarEventos extends AppCompatActivity {
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
-        String url = "http://eventospf2016.herokuapp.com/refresheventos.php";
+        String url = "http://eventospf2016.azurewebsites.net/refresheventos.php";
         new EventosTask().execute(url);
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){

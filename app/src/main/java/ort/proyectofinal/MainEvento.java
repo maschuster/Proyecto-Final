@@ -44,7 +44,7 @@ import java.util.List;
 
 public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
 
-    public static String url = "http://eventospf2016.herokuapp.com/";
+    public static String url = "http://eventospf2016.azurewebsites.net/";
     GoogleMap map;
     Evento e;
     Toolbar toolbar;
@@ -103,7 +103,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             }
         });
     }
-
 
     @Override
     public void onClick(View v) {

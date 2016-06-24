@@ -4,35 +4,14 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:textColor="#FF6D00"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:textSize="25dp"
         android:hint="nombre"
         android:id="@+id/nombre"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="#FF6D00"
-        android:hint="descripcion"
-        android:id="@+id/descripcion"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="#FF6D00"
-        android:hint="fecha"
-        android:id="@+id/fecha"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="#FF6D00"
-        android:hint="lugar"
-        android:id="@+id/lugar"/>
 
 </LinearLayout>
