@@ -44,6 +44,7 @@ import java.util.List;
 
 public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
 
+    public static String url = "http://eventospf2016.herokuapp.com/";
     GoogleMap map;
     Evento e;
     Toolbar toolbar;
@@ -54,7 +55,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
     private View fab;
     ArrayList<Objeto> objetos;
     ArrayList<Persona> personas;
-    String url = "http://proyectofinalsk.hol.es/refreshobjetos.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +184,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
         try {
             OkHttpClient client = new OkHttpClient();
-            String url ="http://proyectofinalsk.hol.es/agregarobjeto.php";
             JSONObject json = new JSONObject();
             json.put("nombre", nombre);
             json.put("precio", precio);
@@ -193,7 +192,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(url+"agregarobjeto.php")
                     .post(body)
                     .build();
 
@@ -220,10 +219,9 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
         @Override
         protected ArrayList<Objeto> doInBackground(String... params) {
-            String url = params[0];
 
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(url+"refreshobjetos.php")
                     .build();
             try {
                 Response response = client.newCall(request).execute();
@@ -260,7 +258,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
         try {
             OkHttpClient client = new OkHttpClient();
-            String url ="http://proyectofinalsk.hol.es/agregarpersona.php";
             JSONObject json = new JSONObject();
             json.put("nombre", nombre);
             json.put("idEvento", idEvento);
@@ -268,7 +265,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(url +"agregarobjeto.php")
                     .post(body)
                     .build();
 
@@ -295,10 +292,9 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
         @Override
         protected ArrayList<Persona> doInBackground(String... params) {
-            String url ="http://proyectofinalsk.hol.es/refreshpersonas.php";
 
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(url+"refreshpersonas.php")
                     .build();
             try {
                 Response response = client.newCall(request).execute();
