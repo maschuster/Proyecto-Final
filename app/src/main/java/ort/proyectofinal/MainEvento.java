@@ -121,6 +121,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 break;
         }
     }
+
     public void showChangeLangDialog() {
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -147,7 +148,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
-
     public void showChangeLangDialogPersona() {
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -235,13 +235,19 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         ArrayList<Objeto> parsearResultado(String JSONstr) throws JSONException {
             ArrayList<Objeto> objetos = new ArrayList<>();
             JSONArray jsonObjetos = new JSONArray(JSONstr);
+            boolean checked;
             for (int i = 0; i < jsonObjetos.length(); i++) {
                 JSONObject jsonResultado = jsonObjetos.getJSONObject(i);
                 int idObjeto = jsonResultado.getInt("idObjeto");
                 String nombre = jsonResultado.getString("nombre");
                 int precio = jsonResultado.getInt("precio");
-
-                Objeto o = new Objeto(nombre,precio,idObjeto);
+                int estado = jsonResultado.getInt("estado");
+                if(estado == 1){
+                    checked = true;
+                }else{
+                    checked = false;
+                }
+                Objeto o = new Objeto(nombre,precio,idObjeto,checked);
                 objetos.add(o);
             }
             return objetos;

@@ -18,10 +18,11 @@ public class Objeto {
         this.checked = checked;
     }
 
-    public Objeto(String nombre, int precio, int idobjeto) {
+    public Objeto(String nombre, int precio, int idobjeto, boolean checked) {
         this.nombre = nombre;
         this.precio = precio;
         this.idObjeto = idobjeto;
+        this.checked = checked;
     }
 
     public int getIdObjeto() {

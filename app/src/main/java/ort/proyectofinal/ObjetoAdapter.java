@@ -71,7 +71,6 @@ public class ObjetoAdapter extends BaseAdapter {
                 ModificarObjetoSQL(position);
             }
         });
-
         Objeto o = objetos.get(position);
         precioTV.setText(String.valueOf(o.getPrecio()));
         nombreTV.setText(String.valueOf(o.getNombre()));
