@@ -187,6 +187,8 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             json.put("nombre", nombre);
             json.put("precio", precio);
             json.put("idEvento", idEvento);
+            json.put("idUsuario", "1");
+            json.put("estado", "0");
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
@@ -201,7 +203,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             Log.d("Error", e.getMessage());
         }
         new ObjetosTask().execute(url);
-
     }
     private class ObjetosTask extends AsyncTask<String, Void, ArrayList<Objeto>> {
         private OkHttpClient client = new OkHttpClient();
