@@ -12,8 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,12 +132,23 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         final View dialogView = inflater.inflate(R.layout.agregar_objeto, null);
         dialogBuilder.setView(dialogView);
 
+        final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
+        ArrayList<String> personasAL = new ArrayList<>();
+        for (Persona item : personas) {
+            personasAL.add(item.getNombre());
+        }
+        ArrayAdapter<String> persAdapter;
+        persAdapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,personasAL);
+        persAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        spinner.setAdapter(persAdapter);
+
         dialogBuilder.setTitle("Agregar Nuevo Objeto");
         dialogBuilder.setMessage("Ingrese los datos");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
+                final String idUsuario = spinner.getSelectedItem().toString();
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
                 final int idEvento = e.getIdEvento();
@@ -152,7 +166,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.agregar_objeto, null);
+        final View dialogView = inflater.inflate(R.layout.agregar_persona, null);
         dialogBuilder.setView(dialogView);
 
         dialogBuilder.setTitle("Agregar Nueva Persona");
@@ -271,7 +285,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .url(url +"agregarobjeto.php")
+                    .url(url +"agregarpersona.php")
                     .post(body)
                     .build();
 
@@ -280,7 +294,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         } catch (IOException | JSONException e) {
             Log.d("Error", e.getMessage());
         }
-        new ObjetosTask().execute(url);
+        new PersonasTask().execute(url);
 
     }
     private class PersonasTask extends AsyncTask<String, Void, ArrayList<Persona>> {
