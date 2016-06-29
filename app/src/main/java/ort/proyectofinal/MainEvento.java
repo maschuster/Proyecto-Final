@@ -86,8 +86,10 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             new GeolocalizacionTask().execute(dirStr);
         }
         objetos = new ArrayList<>();
+        personas = new ArrayList<>();
         new ObjetosTask().execute(url);
-        new PersonasTask().execute();
+        new PersonasTask().execute(url);
+
         layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
         salirfab = findViewById(R.id.salirfab);
         agregarobjetofab = findViewById(R.id.agregarobjetofab);
@@ -148,7 +150,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             public void onClick(DialogInterface dialog, int whichButton) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
-                final String idUsuario = spinner.getSelectedItem().toString();
+                final String idPersona = spinner.getSelectedItem().toString();
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
                 final int idEvento = e.getIdEvento();
@@ -269,7 +271,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
     }
 
-
     public void AgregarPersonaSQL (String nombre, int idEvento) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -279,8 +280,8 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject json = new JSONObject();
-            json.put("nombre", nombre);
             json.put("idEvento", idEvento);
+            json.put("nombre", nombre);
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
@@ -295,7 +296,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             Log.d("Error", e.getMessage());
         }
         new PersonasTask().execute(url);
-
     }
     private class PersonasTask extends AsyncTask<String, Void, ArrayList<Persona>> {
         private OkHttpClient client = new OkHttpClient();
@@ -314,7 +314,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         protected ArrayList<Persona> doInBackground(String... params) {
 
             Request request = new Request.Builder()
-                    .url(url+"refreshpersonas.php")
+                    .url(url+"refreshpersonas.php"+"?idEvento="+e.getIdEvento())
                     .build();
             try {
                 Response response = client.newCall(request).execute();
@@ -332,7 +332,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 JSONObject jsonResultado = jsonPersonas.getJSONObject(i);
                 int idPersona = jsonResultado.getInt("idPersona");
                 String nombre = jsonResultado.getString("nombre");
-
                 Persona p = new Persona(idPersona,nombre);
                 personas.add(p);
             }
