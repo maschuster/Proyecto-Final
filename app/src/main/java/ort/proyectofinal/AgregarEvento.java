@@ -72,12 +72,14 @@ public class AgregarEvento extends AppCompatActivity {
         }else{
             try {
                 OkHttpClient client = new OkHttpClient();
-                String url ="http://proyectofinalsk.hol.es/agregarevento.php";
+                String url ="http://eventospf2016.azurewebsites.net/agregarevento.php";
                 JSONObject json = new JSONObject();
                 json.put("nombre", nombre);
                 json.put("fecha", fecha);
                 json.put("lugar", lugar);
                 json.put("descripcion", descripcion);
+                json.put("idAdmin", 1);
+                json.put("foto", "foto.jpg");
 
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
@@ -88,11 +90,11 @@ public class AgregarEvento extends AppCompatActivity {
 
                 Response response = client.newCall(request).execute();
                 Log.d("Response", response.body().string());
+                Intent intent = new Intent(this, ListarEventos.class);
+                startActivity(intent);
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
             }
-            //Intent intent = new Intent(this, ListarEventos.class);
-            //startActivity(intent);
         }
     }
 }
