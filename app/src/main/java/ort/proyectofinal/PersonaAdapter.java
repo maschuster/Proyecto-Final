@@ -43,7 +43,7 @@ public class PersonaAdapter extends BaseAdapter {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_item_objetos, viewGroup, false);
+            view = inflater.inflate(R.layout.list_item_personas, viewGroup, false);
         }
 
         TextView nombreTV = (TextView)view.findViewById(R.id.nombre);

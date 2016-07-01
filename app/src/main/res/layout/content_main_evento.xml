@@ -107,11 +107,29 @@
 
     </LinearLayout>
 
-        <ListView
-            android:id="@+id/listpersonas"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:hint="Personas:"
+                android:id="@+id/personas"/>
+
+            <ort.proyectofinal.NonScrollListView
+                android:id="@+id/listpersonas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ort.proyectofinal.NonScrollListView>
+
+        </LinearLayout>
 
     </LinearLayout>
 

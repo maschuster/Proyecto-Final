@@ -150,11 +150,11 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             public void onClick(DialogInterface dialog, int whichButton) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
-                final String idPersona = spinner.getSelectedItem().toString();
+                final int idPersona = spinner.getSelectedItemPosition();
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
                 final int idEvento = e.getIdEvento();
-                AgregarObjetoSQL(nombre,precio,idEvento);
+                AgregarObjetoSQL(nombre,precio,idEvento,idPersona);
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -191,7 +191,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
 
 
-    public void AgregarObjetoSQL (String nombre, int precio, int idEvento) {
+    public void AgregarObjetoSQL (String nombre, int precio, int idEvento, int idPersona) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -203,7 +203,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             json.put("nombre", nombre);
             json.put("precio", precio);
             json.put("idEvento", idEvento);
-            json.put("idUsuario", "1");
+            json.put("idUsuario", idPersona);
             json.put("estado", "0");
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
@@ -318,7 +318,8 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                     .build();
             try {
                 Response response = client.newCall(request).execute();
-                return parsearResultado(response.body().string());
+                String json = response.body().string();
+                return parsearResultado(json);
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
                 return new ArrayList<Persona>();
