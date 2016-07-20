@@ -20,7 +20,6 @@
         android:hint="Bienvenido"
         android:id="@+id/Bienvenido" />
 
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
