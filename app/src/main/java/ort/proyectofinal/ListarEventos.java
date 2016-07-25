@@ -3,6 +3,7 @@ package ort.proyectofinal;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -11,8 +12,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
@@ -27,6 +30,7 @@ public class ListarEventos extends AppCompatActivity {
     TextView TVnombre,TVfecha, TVlugar, TVdescripcion;
     ListView listVW;
     ArrayList<Evento> eventos;
+    Usuario user;
 
 
     @Override
@@ -41,6 +45,7 @@ public class ListarEventos extends AppCompatActivity {
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
         String url = "http://eventospf2016.azurewebsites.net/refresheventos.php";
         new EventosTask().execute(url);
+        Usuario user = (Usuario)getIntent().getSerializableExtra("user");
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
@@ -74,12 +79,25 @@ public class ListarEventos extends AppCompatActivity {
 
         @Override
         protected ArrayList<Evento> doInBackground(String... params) {
-            String url = params[0];
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            }
 
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
+            String url = params[0];
             try {
+                OkHttpClient client = new OkHttpClient();
+                JSONObject json = new JSONObject();
+                json.put("idFacebook", user.getIdFacebook());
+
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+
                 Response response = client.newCall(request).execute();
                 return parsearResultado(response.body().string());
             } catch (IOException | JSONException e) {
@@ -104,7 +122,5 @@ public class ListarEventos extends AppCompatActivity {
             }
             return eventos;
         }
-
-
     }
 }
