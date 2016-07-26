@@ -5,12 +5,10 @@ import java.io.Serializable;
 public class Usuario implements Serializable {
     String idFacebook;
     String nombre;
-    String email;
 
-    public Usuario(String idFacebook, String nombre, String email) {
+    public Usuario(String idFacebook, String nombre) {
         this.idFacebook = idFacebook;
         this.nombre = nombre;
-        this.email = email;
     }
 
 
@@ -28,14 +26,6 @@ public class Usuario implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 }
 

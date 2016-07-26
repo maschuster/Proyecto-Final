@@ -1,26 +1,19 @@
 package ort.proyectofinal;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.PersistableBundle;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.StrictMode;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -30,16 +23,21 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity {
     CallbackManager callbackManager;
     LoginButton loginButton;
     public static String url = "http://eventospf2016.azurewebsites.net/";
     Usuario user;
+    AccessToken accessToken;
+
+
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,14 +50,16 @@ public class MainActivity extends FragmentActivity {
         loginButton.setReadPermissions("user_friends");
         loginButton.setReadPermissions("public_profile");
         loginButton.setReadPermissions("email");
-
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        System.out.println("Success");
+                        accessToken = loginResult.getAccessToken();
+                        authenticationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        //new authenticationTask().execute();
+                        /*System.out.println("Success");
                         GraphRequest request = GraphRequest.newMeRequest(
-                                loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                accessToken, new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
                                     public void onCompleted(JSONObject json, GraphResponse response) {
                                         if (response != null) {
@@ -70,11 +70,9 @@ public class MainActivity extends FragmentActivity {
                                                 String idFacebook = json.getString("id");
                                                 String nombre = json.getString("name");
                                                 String email = json.getString("email");
-                                                checkUser(idFacebook,nombre,email);
                                                 user = new Usuario (idFacebook,nombre,email);
 
                                                 Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-                                                intent.putExtra("user", user);
                                                 startActivity(intent);
 
                                             } catch (JSONException e) {
@@ -88,7 +86,7 @@ public class MainActivity extends FragmentActivity {
                         parameters.putString("fields", "id,name,email");
                         request.setParameters(parameters);
                         request.executeAsync();
-
+                        */
                     }
 
                     @Override
@@ -109,30 +107,49 @@ public class MainActivity extends FragmentActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void checkUser(String idFacebook, String nombre, String email){
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
+    AsyncTask<String, Void, Usuario> authenticationTask = new AsyncTask<String, Void, Usuario>(){
+    //private class authenticationTask extends AsyncTask<String, Void, Usuario> {
+        private OkHttpClient client = new OkHttpClient();
 
-        try {
-            OkHttpClient client = new OkHttpClient();
+        @Override
+        protected void onPostExecute(Usuario user) {
+            super.onPostExecute(user);
+            Log.v("AsyncTask", "onPostExecute");
+            }
+
+        @Override
+        protected Usuario doInBackground(String... params) {
+            try {
             JSONObject json = new JSONObject();
-            json.put("idFacebook", idFacebook);
-            json.put("nombre", nombre);
-            json.put("email", email);
+            json.put("accesToken", accessToken);
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .url(url+"checkUser.php")
+                    .url(url+"authentication.php")
                     .post(body)
                     .build();
 
-            Response response = client.newCall(request).execute();
-            String respuesta = response.body().string();        //Validar si hay errores
-        } catch (IOException | JSONException e) {
-            Log.d("Error", e.getMessage());
+                Response response = client.newCall(request).execute();
+                String jsonresponse = response.body().string();
+                return parsearResultado(jsonresponse);
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new Usuario("","");
+            }
         }
-    }
+
+        Usuario parsearResultado(String JSONstr) throws JSONException {
+            JSONArray jsonPersonas = new JSONArray(JSONstr);
+            for (int i = 0; i < jsonPersonas.length(); i++) {
+                JSONObject jsonResultado = jsonPersonas.getJSONObject(i);
+                String idFacebook = jsonResultado.getString("idFacebook");
+                String nombre = jsonResultado.getString("nombre");
+                user  = new Usuario(idFacebook,nombre);
+            }
+            return user;
+        }
+    };
 }
+
+
