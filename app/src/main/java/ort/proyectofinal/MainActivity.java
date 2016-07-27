@@ -55,8 +55,7 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         accessToken = loginResult.getAccessToken();
-                        authenticationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        //new authenticationTask().execute();
+                        new authenticationTask().execute();
                         /*System.out.println("Success");
                         GraphRequest request = GraphRequest.newMeRequest(
                                 accessToken, new GraphRequest.GraphJSONObjectCallback() {
@@ -107,21 +106,22 @@ public class MainActivity extends FragmentActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    AsyncTask<String, Void, Usuario> authenticationTask = new AsyncTask<String, Void, Usuario>(){
-    //private class authenticationTask extends AsyncTask<String, Void, Usuario> {
+    private class authenticationTask extends AsyncTask<String, Void, Usuario> {
         private OkHttpClient client = new OkHttpClient();
 
         @Override
-        protected void onPostExecute(Usuario user) {
-            super.onPostExecute(user);
-            Log.v("AsyncTask", "onPostExecute");
+        protected void onPostExecute(Usuario userResult) {
+            super.onPostExecute(userResult);
+            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
+            startActivity(intent);
             }
 
         @Override
         protected Usuario doInBackground(String... params) {
             try {
             JSONObject json = new JSONObject();
-            json.put("accesToken", accessToken);
+            String accesToken = accessToken.getToken();
+            json.put("accesToken", accesToken);
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
@@ -132,24 +132,21 @@ public class MainActivity extends FragmentActivity {
 
                 Response response = client.newCall(request).execute();
                 String jsonresponse = response.body().string();
-                return parsearResultado(jsonresponse);
+                return parsearResultado(jsonresponse);              //Cuando entra después de pasar por parsear resultado, salta directamente a
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
-                return new Usuario("","");
+                return new Usuario("","");                          //ACÁ
             }
         }
 
         Usuario parsearResultado(String JSONstr) throws JSONException {
-            JSONArray jsonPersonas = new JSONArray(JSONstr);
-            for (int i = 0; i < jsonPersonas.length(); i++) {
-                JSONObject jsonResultado = jsonPersonas.getJSONObject(i);
+                JSONObject jsonResultado = new JSONObject(JSONstr);
                 String idFacebook = jsonResultado.getString("idFacebook");
                 String nombre = jsonResultado.getString("nombre");
                 user  = new Usuario(idFacebook,nombre);
-            }
             return user;
         }
-    };
+    }
 }
 
 

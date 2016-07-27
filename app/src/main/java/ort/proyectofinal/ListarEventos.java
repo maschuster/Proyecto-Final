@@ -31,7 +31,7 @@ public class ListarEventos extends AppCompatActivity {
     ListView listVW;
     ArrayList<Evento> eventos;
     Usuario user;
-
+    public static String url = "http://eventospf2016.azurewebsites.net/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +43,7 @@ public class ListarEventos extends AppCompatActivity {
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
-        String url = "http://eventospf2016.azurewebsites.net/refresheventos.php";
         new EventosTask().execute(url);
-        Usuario user = (Usuario)getIntent().getSerializableExtra("user");
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
@@ -79,27 +77,13 @@ public class ListarEventos extends AppCompatActivity {
 
         @Override
         protected ArrayList<Evento> doInBackground(String... params) {
-            if (android.os.Build.VERSION.SDK_INT > 9) {
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-            }
-
-            String url = params[0];
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
             try {
-                OkHttpClient client = new OkHttpClient();
-                JSONObject json = new JSONObject();
-                json.put("idFacebook", user.getIdFacebook());
-
-
-                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
-
-                Request request = new Request.Builder()
-                        .url(url)
-                        .post(body)
-                        .build();
-
                 Response response = client.newCall(request).execute();
-                return parsearResultado(response.body().string());
+                String json = response.body().string();
+                return parsearResultado(json);
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
                 return new ArrayList<Evento>();
