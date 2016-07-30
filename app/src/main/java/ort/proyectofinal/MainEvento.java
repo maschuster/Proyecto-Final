@@ -15,11 +15,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,6 +38,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.internal.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,6 +64,8 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
     private View fab;
     ArrayList<Objeto> objetos;
     ArrayList<Persona> personas;
+    ArrayList<Usuario> friends;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +87,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         listpersonas = (ListView) findViewById(R.id.listpersonas);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
-        String fecha = e.getFecha().substring(0,10);
+        String fecha = e.getFecha().substring(0, 10);
         TVfecha.setText(fecha);
         String dirStr = e.getLugar();
         if (!dirStr.isEmpty()) {
@@ -140,7 +148,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             personasAL.add(item.getNombre());
         }
         ArrayAdapter<String> persAdapter;
-        persAdapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,personasAL);
+        persAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, personasAL);
         persAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         spinner.setAdapter(persAdapter);
 
@@ -154,7 +162,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
                 final int idEvento = e.getIdEvento();
-                AgregarObjetoSQL(nombre,precio,idEvento,idPersona);
+                AgregarObjetoSQL(nombre, precio, idEvento, idPersona);
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -164,6 +172,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
+
     public void showChangeLangDialogPersona() {
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -175,23 +184,31 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         dialogBuilder.setMessage("Ingrese los datos");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
-                final String nombre = edt.getText().toString();
-                final int idEvento = e.getIdEvento();
-                AgregarPersonaSQL(nombre,idEvento);
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
+        ImageButton button = (ImageButton)dialogView.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
+                final String nombre = edt.getText().toString();
+                Usuario persona = new Usuario("personavirtual",nombre);
+                AgregarParticipante(persona, e.getIdEvento());
+            }
+        });
+        facebookfriends();
+        FriendAdapter adapter = new FriendAdapter(getApplicationContext(),friends);
+        ListView listVwFriends = (ListView) findViewById(R.id.listVwFriends);
+        listVwFriends.setAdapter(adapter);
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
 
-
-
-    public void AgregarObjetoSQL (String nombre, int precio, int idEvento, int idPersona) {
+    public void AgregarObjetoSQL(String nombre, int precio, int idEvento, int idPersona) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -209,7 +226,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .url(url+"agregarobjeto.php")
+                    .url(url + "agregarobjeto.php")
                     .post(body)
                     .build();
 
@@ -220,6 +237,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         }
         new ObjetosTask().execute(url);
     }
+
     private class ObjetosTask extends AsyncTask<String, Void, ArrayList<Objeto>> {
         private OkHttpClient client = new OkHttpClient();
 
@@ -228,7 +246,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             super.onPostExecute(objetosResult);
             if (!objetosResult.isEmpty()) {
                 objetos = objetosResult;
-                ObjetoAdapter adapter = new ObjetoAdapter(getApplicationContext(),objetosResult);
+                ObjetoAdapter adapter = new ObjetoAdapter(getApplicationContext(), objetosResult);
                 list.setAdapter(adapter);
             }
         }
@@ -237,7 +255,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         protected ArrayList<Objeto> doInBackground(String... params) {
 
             Request request = new Request.Builder()
-                    .url(url+"refreshobjetos.php"+"?idEvento="+e.getIdEvento())
+                    .url(url + "refreshobjetos.php" + "?idEvento=" + e.getIdEvento())
                     .build();
             try {
                 Response response = client.newCall(request).execute();
@@ -258,12 +276,12 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 String nombre = jsonResultado.getString("nombre");
                 int precio = jsonResultado.getInt("precio");
                 int estado = jsonResultado.getInt("estado");
-                if(estado == 1){
+                if (estado == 1) {
                     checked = true;
-                }else{
+                } else {
                     checked = false;
                 }
-                Objeto o = new Objeto(nombre,precio,idObjeto,checked);
+                Objeto o = new Objeto(nombre, precio, idObjeto, checked);
                 objetos.add(o);
             }
             return objetos;
@@ -271,32 +289,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
     }
 
-    public void AgregarPersonaSQL (String nombre, int idEvento) {
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
-        try {
-            OkHttpClient client = new OkHttpClient();
-            JSONObject json = new JSONObject();
-            json.put("idEvento", idEvento);
-            json.put("nombre", nombre);
-
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
-
-            Request request = new Request.Builder()
-                    .url(url +"agregarpersona.php")
-                    .post(body)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            Log.d("Response", response.body().string());
-        } catch (IOException | JSONException e) {
-            Log.d("Error", e.getMessage());
-        }
-        new PersonasTask().execute(url);
-    }
     private class PersonasTask extends AsyncTask<String, Void, ArrayList<Persona>> {
         private OkHttpClient client = new OkHttpClient();
 
@@ -305,7 +297,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             super.onPostExecute(personasResult);
             if (!personasResult.isEmpty()) {
                 personas = personasResult;
-                PersonaAdapter adapter = new PersonaAdapter(getApplicationContext(),personasResult);
+                PersonaAdapter adapter = new PersonaAdapter(getApplicationContext(), personasResult);
                 listpersonas.setAdapter(adapter);
             }
         }
@@ -314,7 +306,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         protected ArrayList<Persona> doInBackground(String... params) {
 
             Request request = new Request.Builder()
-                    .url(url+"refreshpersonas.php"+"?idEvento="+e.getIdEvento())
+                    .url(url + "refreshpersonas.php" + "?idEvento=" + e.getIdEvento())
                     .build();
             try {
                 Response response = client.newCall(request).execute();
@@ -333,7 +325,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 JSONObject jsonResultado = jsonPersonas.getJSONObject(i);
                 int idPersona = jsonResultado.getInt("idPersona");
                 String nombre = jsonResultado.getString("nombre");
-                Persona p = new Persona(idPersona,nombre);
+                Persona p = new Persona(idPersona, nombre);
                 personas.add(p);
             }
             return personas;
@@ -344,11 +336,12 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
 
     @Override
     public void onMapReady(GoogleMap map) {
-        this.map=map;
+        this.map = map;
         map.getUiSettings().setZoomControlsEnabled(true);
 
     }
-    private class GeolocalizacionTask extends AsyncTask<String, Void,List<Address>> {
+
+    private class GeolocalizacionTask extends AsyncTask<String, Void, List<Address>> {
         @Override
         protected void onPostExecute(List<Address> direcciones) {
             super.onPostExecute(direcciones);
@@ -356,18 +349,18 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             if (!direcciones.isEmpty()) {
                 // Muestro la primera direccion recibida
                 Address dirRecibida = direcciones.get(0);  // La primera direccion
-                String addressStr=dirRecibida.getAddressLine(0);  // Primera linea del texto
+                String addressStr = dirRecibida.getAddressLine(0);  // Primera linea del texto
 
                 // Muestro coordenadas
                 double lat = dirRecibida.getLatitude(); //
                 double lng = dirRecibida.getLongitude();
-                String coordStr = lat+ "," + lng;
+                String coordStr = lat + "," + lng;
 
                 // Ubico la direccion en el mapa
                 if (map != null) {
-                    CameraUpdate center=
-                            CameraUpdateFactory.newLatLng(new LatLng(lat,lng));
-                    CameraUpdate zoom= CameraUpdateFactory.zoomTo(15);
+                    CameraUpdate center =
+                            CameraUpdateFactory.newLatLng(new LatLng(lat, lng));
+                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
                     map.moveCamera(center);
                     map.animateCamera(zoom);   // Posiciono la camara en las coordenadas recibidas
 
@@ -377,6 +370,7 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
                 }
             }
         }
+
         @Override
         protected List<Address> doInBackground(String... params) {
             String address = params[0];
@@ -391,4 +385,70 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             return addresses;
         }
     }
+
+
+
+    public void facebookfriends() {
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/{friend-list-id}/members",
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        if (response != null) {
+                            Log.v("", "FriendListRequestONComplete");
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.getRawResponse());
+                                JSONArray d = jsonObject.getJSONArray("data");
+                                int l = (d != null ? d.length() : 0);
+                                for (int i = 0; i < l; i++) {
+                                    JSONObject o = d.getJSONObject(i);
+                                    String n = o.getString("name");
+                                    String id = o.getString("id");
+                                    Usuario f = new Usuario(id,n);
+                                    friends.add(f);
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        ).executeAsync();
+    }
+
+    public void FriendClicked( Usuario friend){
+        AgregarParticipante(friend,e.getIdEvento());
+    }
+
+    public void AgregarParticipante(Usuario f, int idEvento){
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
+        try {
+            OkHttpClient client = new OkHttpClient();
+            JSONObject json = new JSONObject();
+            json.put("idEvento", idEvento);
+            json.put("idFacebook", f.getIdFacebook());
+            json.put("nombre", f.getNombre());
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            Request request = new Request.Builder()
+                    .url(url + "agregarparticipante.php")
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            Log.d("Response", response.body().string());
+        } catch (IOException | JSONException e) {
+            Log.d("Error", e.getMessage());
+        }
+        new PersonasTask().execute(url);
+    }
+
 }

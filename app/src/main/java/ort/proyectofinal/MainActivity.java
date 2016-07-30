@@ -55,37 +55,11 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         accessToken = loginResult.getAccessToken();
-                        new authenticationTask().execute();
-                        /*System.out.println("Success");
-                        GraphRequest request = GraphRequest.newMeRequest(
-                                accessToken, new GraphRequest.GraphJSONObjectCallback() {
-                                    @Override
-                                    public void onCompleted(JSONObject json, GraphResponse response) {
-                                        if (response != null) {
-                                            try {
-                                                String jsonresult = String.valueOf(json);
-                                                System.out.println("JSON Result"+jsonresult);
-
-                                                String idFacebook = json.getString("id");
-                                                String nombre = json.getString("name");
-                                                String email = json.getString("email");
-                                                user = new Usuario (idFacebook,nombre,email);
-
-                                                Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-                                                startActivity(intent);
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-
-                                });
-                        Bundle parameters = new Bundle();
-                        parameters.putString("fields", "id,name,email");
-                        request.setParameters(parameters);
-                        request.executeAsync();
-                        */
+                        //new authenticationTask().execute();
+                        authentication(accessToken);
+                        Intent intent = new Intent(MainActivity.this, ListarEventos.class);
+                        startActivity(intent);
+                        System.out.println("Success");
                     }
 
                     @Override
@@ -106,15 +80,38 @@ public class MainActivity extends FragmentActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void authentication(AccessToken accessToken){
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        try {
+            OkHttpClient client = new OkHttpClient();
+            JSONObject json = new JSONObject();
+            String accesToken = accessToken.getToken();
+            json.put("accesToken", accesToken);
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            Request request = new Request.Builder()
+                    .url(url+"authentication.php")
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            String jsonresponse = response.body().string();
+            JSONObject jsonResultado = new JSONObject(jsonresponse);
+            String idFacebook = jsonResultado.getString("idFacebook");
+            String nombre = jsonResultado.getString("nombre");
+            user  = new Usuario(idFacebook,nombre);
+        } catch (IOException | JSONException e) {
+            Log.d("Error", e.getMessage());
+        }
+    }
+
     private class authenticationTask extends AsyncTask<String, Void, Usuario> {
         private OkHttpClient client = new OkHttpClient();
 
-        @Override
-        protected void onPostExecute(Usuario userResult) {
-            super.onPostExecute(userResult);
-            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-            startActivity(intent);
-            }
 
         @Override
         protected Usuario doInBackground(String... params) {
@@ -132,10 +129,10 @@ public class MainActivity extends FragmentActivity {
 
                 Response response = client.newCall(request).execute();
                 String jsonresponse = response.body().string();
-                return parsearResultado(jsonresponse);              //Cuando entra después de pasar por parsear resultado, salta directamente a
+                return parsearResultado(jsonresponse);
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
-                return new Usuario("","");                          //ACÁ
+                return new Usuario("","");
             }
         }
 

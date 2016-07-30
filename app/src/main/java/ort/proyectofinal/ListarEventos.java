@@ -78,7 +78,7 @@ public class ListarEventos extends AppCompatActivity {
         @Override
         protected ArrayList<Evento> doInBackground(String... params) {
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(url+"refresheventos.php")
                     .build();
             try {
                 Response response = client.newCall(request).execute();
