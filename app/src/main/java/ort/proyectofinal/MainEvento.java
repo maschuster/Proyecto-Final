@@ -51,13 +51,13 @@ import java.util.Date;
 import java.util.List;
 
 
-public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener {
+public class MainEvento extends AppCompatActivity implements View.OnClickListener {
 
     public static String url = "http://eventospf2016.azurewebsites.net/";
     GoogleMap map;
     Evento e;
     Toolbar toolbar;
-    TextView TVdescripcion, TVfecha;
+    TextView TVdescripcion, TVfecha, TVlugar;
     private FABToolbarLayout layout;
     private View salirfab, agregarobjetofab, three, four;
     private ListView list, listpersonas;
@@ -74,25 +74,17 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         TVdescripcion = (TextView) findViewById(R.id.descripcion);
         TVfecha = (TextView) findViewById(R.id.fecha);
-
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        TVlugar = (TextView) findViewById(R.id.lugar);
+        TVdescripcion.setText(e.getDescripcion());
+        listpersonas = (ListView) findViewById(R.id.listpersonas);
 
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
-        TVdescripcion.setText(e.getDescripcion());
-        listpersonas = (ListView) findViewById(R.id.listpersonas);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = null;
         String fecha = e.getFecha().substring(0, 10);
         TVfecha.setText(fecha);
-        String dirStr = e.getLugar();
-        if (!dirStr.isEmpty()) {
-            new GeolocalizacionTask().execute(dirStr);
-        }
+        TVlugar.setText(e.getLugar());
         objetos = new ArrayList<>();
         personas = new ArrayList<>();
         new ObjetosTask().execute(url);
@@ -331,59 +323,6 @@ public class MainEvento extends AppCompatActivity implements OnMapReadyCallback,
             return personas;
         }
 
-    }
-
-
-    @Override
-    public void onMapReady(GoogleMap map) {
-        this.map = map;
-        map.getUiSettings().setZoomControlsEnabled(true);
-
-    }
-
-    private class GeolocalizacionTask extends AsyncTask<String, Void, List<Address>> {
-        @Override
-        protected void onPostExecute(List<Address> direcciones) {
-            super.onPostExecute(direcciones);
-
-            if (!direcciones.isEmpty()) {
-                // Muestro la primera direccion recibida
-                Address dirRecibida = direcciones.get(0);  // La primera direccion
-                String addressStr = dirRecibida.getAddressLine(0);  // Primera linea del texto
-
-                // Muestro coordenadas
-                double lat = dirRecibida.getLatitude(); //
-                double lng = dirRecibida.getLongitude();
-                String coordStr = lat + "," + lng;
-
-                // Ubico la direccion en el mapa
-                if (map != null) {
-                    CameraUpdate center =
-                            CameraUpdateFactory.newLatLng(new LatLng(lat, lng));
-                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-                    map.moveCamera(center);
-                    map.animateCamera(zoom);   // Posiciono la camara en las coordenadas recibidas
-
-                    map.addMarker(new MarkerOptions()
-                            .position(new LatLng(lat, lng))
-                            .title(dirRecibida.getAddressLine(0)));  // Dibujo el marker
-                }
-            }
-        }
-
-        @Override
-        protected List<Address> doInBackground(String... params) {
-            String address = params[0];
-            Geocoder geocoder = new Geocoder(getApplicationContext());
-            List<Address> addresses = null;
-            try {
-                // Utilizo la clase Geocoder para buscar la direccion. Limito a 10 resultados
-                addresses = geocoder.getFromLocationName(address, 10);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return addresses;
-        }
     }
 
 

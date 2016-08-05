@@ -1,11 +1,15 @@
 package ort.proyectofinal;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -27,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity {
@@ -43,9 +49,19 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_main);
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.eatapp", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.e("MY KEY HASH:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
 
+        } catch (NoSuchAlgorithmException e) {
+
+        }
         callbackManager = CallbackManager.Factory.create();
-
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.setReadPermissions("public_profile");
@@ -58,6 +74,7 @@ public class MainActivity extends FragmentActivity {
                         //new authenticationTask().execute();
                         authentication(accessToken);
                         Intent intent = new Intent(MainActivity.this, ListarEventos.class);
+
                         startActivity(intent);
                         System.out.println("Success");
                     }
@@ -109,7 +126,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private class authenticationTask extends AsyncTask<String, Void, Usuario> {
+    /*private class authenticationTask extends AsyncTask<String, Void, Usuario> {
         private OkHttpClient client = new OkHttpClient();
 
 
@@ -143,7 +160,7 @@ public class MainActivity extends FragmentActivity {
                 user  = new Usuario(idFacebook,nombre);
             return user;
         }
-    }
+    }*/
 }
 
 

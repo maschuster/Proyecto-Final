@@ -30,6 +30,7 @@ public class ListarEventos extends AppCompatActivity {
     TextView TVnombre,TVfecha, TVlugar, TVdescripcion;
     ListView listVW;
     ArrayList<Evento> eventos;
+    Usuario useronline;
     Usuario user;
     public static String url = "http://eventospf2016.azurewebsites.net/";
 
@@ -43,6 +44,7 @@ public class ListarEventos extends AppCompatActivity {
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
+        Bundle extras = getIntent().getExtras();
         new EventosTask().execute(url);
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
