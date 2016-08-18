@@ -53,7 +53,6 @@ public class FriendAdapter extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageButton button = (ImageButton) v;
                 Usuario f = friends.get(position);
                 ((MainEvento)context).FriendClicked(f);
             }

@@ -127,7 +127,7 @@
                 android:id="@+id/personas"/>
 
             <ort.proyectofinal.NonScrollListView
-                android:id="@+id/listpersonas"
+                android:id="@+id/listparticipantes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </ort.proyectofinal.NonScrollListView>

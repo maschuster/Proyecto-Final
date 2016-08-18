@@ -125,42 +125,6 @@ public class MainActivity extends FragmentActivity {
             Log.d("Error", e.getMessage());
         }
     }
-
-    /*private class authenticationTask extends AsyncTask<String, Void, Usuario> {
-        private OkHttpClient client = new OkHttpClient();
-
-
-        @Override
-        protected Usuario doInBackground(String... params) {
-            try {
-            JSONObject json = new JSONObject();
-            String accesToken = accessToken.getToken();
-            json.put("accesToken", accesToken);
-
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
-
-            Request request = new Request.Builder()
-                    .url(url+"authentication.php")
-                    .post(body)
-                    .build();
-
-                Response response = client.newCall(request).execute();
-                String jsonresponse = response.body().string();
-                return parsearResultado(jsonresponse);
-            } catch (IOException | JSONException e) {
-                Log.d("Error", e.getMessage());
-                return new Usuario("","");
-            }
-        }
-
-        Usuario parsearResultado(String JSONstr) throws JSONException {
-                JSONObject jsonResultado = new JSONObject(JSONstr);
-                String idFacebook = jsonResultado.getString("idFacebook");
-                String nombre = jsonResultado.getString("nombre");
-                user  = new Usuario(idFacebook,nombre);
-            return user;
-        }
-    }*/
 }
 
 

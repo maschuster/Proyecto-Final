@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -30,6 +31,7 @@ public class ListarEventos extends AppCompatActivity {
     TextView TVnombre,TVfecha, TVlugar, TVdescripcion;
     ListView listVW;
     ArrayList<Evento> eventos;
+    AccessToken accessToken;
     Usuario useronline;
     Usuario user;
     public static String url = "http://eventospf2016.azurewebsites.net/";
@@ -46,6 +48,7 @@ public class ListarEventos extends AppCompatActivity {
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
         Bundle extras = getIntent().getExtras();
         new EventosTask().execute(url);
+        accessToken = AccessToken.getCurrentAccessToken();
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
@@ -80,6 +83,7 @@ public class ListarEventos extends AppCompatActivity {
         @Override
         protected ArrayList<Evento> doInBackground(String... params) {
             Request request = new Request.Builder()
+                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
                     .url(url+"refresheventos.php")
                     .build();
             try {

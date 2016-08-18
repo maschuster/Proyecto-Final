@@ -1,8 +1,6 @@
 package ort.proyectofinal;
 
 import android.content.DialogInterface;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -12,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,29 +23,19 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.squareup.okhttp.internal.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 
 public class MainEvento extends AppCompatActivity implements View.OnClickListener {
@@ -60,11 +47,13 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     TextView TVdescripcion, TVfecha, TVlugar;
     private FABToolbarLayout layout;
     private View salirfab, agregarobjetofab, three, four;
-    private ListView list, listpersonas;
+    private ListView list, listparticipantes;
     private View fab;
     ArrayList<Objeto> objetos;
     ArrayList<Persona> personas;
     ArrayList<Usuario> friends;
+    ArrayList<Participante> participantes;
+    AccessToken accessToken;
 
 
     @Override
@@ -76,7 +65,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVfecha = (TextView) findViewById(R.id.fecha);
         TVlugar = (TextView) findViewById(R.id.lugar);
         TVdescripcion.setText(e.getDescripcion());
-        listpersonas = (ListView) findViewById(R.id.listpersonas);
+        listparticipantes = (ListView) findViewById(R.id.listparticipantes);
 
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
@@ -86,9 +75,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVfecha.setText(fecha);
         TVlugar.setText(e.getLugar());
         objetos = new ArrayList<>();
-        personas = new ArrayList<>();
-        new ObjetosTask().execute(url);
-        new PersonasTask().execute(url);
+        participantes = new ArrayList<>();
+        accessToken = AccessToken.getCurrentAccessToken();
 
         layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
         salirfab = findViewById(R.id.salirfab);
@@ -107,6 +95,9 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 layout.show();
             }
         });
+
+        new ObjetosTask().execute(url);
+        new ParticipantesTask().execute(url);
     }
 
     @Override
@@ -119,7 +110,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 showChangeLangDialog();
                 break;
             case R.id.three:
-                showChangeLangDialogPersona();
+                showChangeLangDialogParticipante();
                 break;
             case R.id.four:
                 Toast.makeText(this, "Sin Acciones", Toast.LENGTH_SHORT).show();
@@ -135,14 +126,14 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         dialogBuilder.setView(dialogView);
 
         final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
-        ArrayList<String> personasAL = new ArrayList<>();
-        for (Persona item : personas) {
-            personasAL.add(item.getNombre());
+        final ArrayList<String> participantesAL = new ArrayList<>();
+        for (Participante item : participantes) {
+            participantesAL.add(item.getNombre());
         }
-        ArrayAdapter<String> persAdapter;
-        persAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, personasAL);
-        persAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        spinner.setAdapter(persAdapter);
+        ArrayAdapter<String> partAdapter;
+        partAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, participantesAL);
+        partAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        spinner.setAdapter(partAdapter);
 
         dialogBuilder.setTitle("Agregar Nuevo Objeto");
         dialogBuilder.setMessage("Ingrese los datos");
@@ -150,11 +141,13 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(DialogInterface dialog, int whichButton) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
-                final int idPersona = spinner.getSelectedItemPosition();
+                final int idParticipantePosition = spinner.getSelectedItemPosition();
+                Participante p = participantes.get(idParticipantePosition);
+                final int idParticipante = p.getIdParticipante();
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
                 final int idEvento = e.getIdEvento();
-                AgregarObjetoSQL(nombre, precio, idEvento, idPersona);
+                AgregarObjetoSQL(nombre, precio, idEvento, idParticipante);
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -165,14 +158,14 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         b.show();
     }
 
-    public void showChangeLangDialogPersona() {
+    public void showChangeLangDialogParticipante() {
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.agregar_persona, null);
+        final View dialogView = inflater.inflate(R.layout.agregar_participante, null);
         dialogBuilder.setView(dialogView);
 
-        dialogBuilder.setTitle("Agregar Nueva Persona");
+        dialogBuilder.setTitle("Agregar Nuevo Participante");
         dialogBuilder.setMessage("Ingrese los datos");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -188,8 +181,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(View v) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 final String nombre = edt.getText().toString();
-                Usuario persona = new Usuario("personavirtual",nombre);
-                AgregarParticipante(persona, e.getIdEvento());
+                Usuario personavirtual = new Usuario("personavirtual",nombre);
+                AgregarParticipante(personavirtual, e.getIdEvento());
             }
         });
         facebookfriends();
@@ -200,7 +193,10 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         b.show();
     }
 
-    public void AgregarObjetoSQL(String nombre, int precio, int idEvento, int idPersona) {
+
+
+
+    public void AgregarObjetoSQL(String nombre, int precio, int idEvento, int idParticipante) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -212,12 +208,13 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             json.put("nombre", nombre);
             json.put("precio", precio);
             json.put("idEvento", idEvento);
-            json.put("idUsuario", idPersona);
+            json.put("idParticipante", idParticipante);
             json.put("estado", "0");
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
+                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
                     .url(url + "agregarobjeto.php")
                     .post(body)
                     .build();
@@ -247,6 +244,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         protected ArrayList<Objeto> doInBackground(String... params) {
 
             Request request = new Request.Builder()
+                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
                     .url(url + "refreshobjetos.php" + "?idEvento=" + e.getIdEvento())
                     .build();
             try {
@@ -281,49 +279,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
     }
 
-    private class PersonasTask extends AsyncTask<String, Void, ArrayList<Persona>> {
-        private OkHttpClient client = new OkHttpClient();
-
-        @Override
-        protected void onPostExecute(ArrayList<Persona> personasResult) {
-            super.onPostExecute(personasResult);
-            if (!personasResult.isEmpty()) {
-                personas = personasResult;
-                PersonaAdapter adapter = new PersonaAdapter(getApplicationContext(), personasResult);
-                listpersonas.setAdapter(adapter);
-            }
-        }
-
-        @Override
-        protected ArrayList<Persona> doInBackground(String... params) {
-
-            Request request = new Request.Builder()
-                    .url(url + "refreshpersonas.php" + "?idEvento=" + e.getIdEvento())
-                    .build();
-            try {
-                Response response = client.newCall(request).execute();
-                String json = response.body().string();
-                return parsearResultado(json);
-            } catch (IOException | JSONException e) {
-                Log.d("Error", e.getMessage());
-                return new ArrayList<Persona>();
-            }
-        }
-
-        ArrayList<Persona> parsearResultado(String JSONstr) throws JSONException {
-            ArrayList<Persona> personas = new ArrayList<>();
-            JSONArray jsonPersonas = new JSONArray(JSONstr);
-            for (int i = 0; i < jsonPersonas.length(); i++) {
-                JSONObject jsonResultado = jsonPersonas.getJSONObject(i);
-                int idPersona = jsonResultado.getInt("idPersona");
-                String nombre = jsonResultado.getString("nombre");
-                Persona p = new Persona(idPersona, nombre);
-                personas.add(p);
-            }
-            return personas;
-        }
-
-    }
 
 
 
@@ -378,6 +333,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
+                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
                     .url(url + "agregarparticipante.php")
                     .post(body)
                     .build();
@@ -387,7 +343,53 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         } catch (IOException | JSONException e) {
             Log.d("Error", e.getMessage());
         }
-        new PersonasTask().execute(url);
+        new ParticipantesTask().execute(url);
+    }
+
+    private class ParticipantesTask extends AsyncTask<String, Void, ArrayList<Participante>> {
+        private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPostExecute(ArrayList<Participante> participantesResult) {
+            super.onPostExecute(participantesResult);
+            if (!participantesResult.isEmpty()) {
+                participantes = participantesResult;
+                ParticipanteAdapter adapter = new ParticipanteAdapter(getApplicationContext(), participantesResult);
+                listparticipantes.setAdapter(adapter);               //LISTPARTICIPANTES
+            }
+        }
+
+        @Override
+        protected ArrayList<Participante> doInBackground(String... params) {
+
+            Request request = new Request.Builder()
+                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
+                    .url(url + "refreshparticipantes.php" + "?idEvento=" + e.getIdEvento())
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                String json = response.body().string();
+                return parsearResultado(json);
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new ArrayList<Participante>();
+            }
+        }
+
+        ArrayList<Participante> parsearResultado(String JSONstr) throws JSONException {
+            ArrayList<Participante> participantes = new ArrayList<>();
+            JSONArray jsonParticipante = new JSONArray(JSONstr);
+            for (int i = 0; i < jsonParticipante.length(); i++) {
+                JSONObject jsonResultado = jsonParticipante.getJSONObject(i);
+                int idParticipante = jsonResultado.getInt("idParticipante");
+                String idFacebook = jsonResultado.getString("idFacebook");
+                String nombre = jsonResultado.getString("nombre");
+                Participante p = new Participante(idParticipante,idFacebook, nombre);
+                participantes.add(p);
+            }
+            return participantes;
+        }
+
     }
 
 }
