@@ -84,9 +84,9 @@ public class ListarEventos extends AppCompatActivity {
 
         @Override
         protected ArrayList<Evento> doInBackground(String... params) {
-            Request request = new Request.Builder()
+            Request  request = new Request.Builder()
                     .url(url+"refresheventos.php")
-                    .addHeader("HTTP-X-USER-ID",accessToken.getUserId())
+                    .addHeader("X-USER-ID",accessToken.getUserId())
                     .build();
             try {
                 Response response = client.newCall(request).execute();

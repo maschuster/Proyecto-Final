@@ -25,12 +25,19 @@ public class FriendAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return friends.size();
+        if (friends != null && friends.size() >0)
+            return friends.size();
+        else
+            return  0;
     }
 
     @Override
     public Object getItem(int i) {
-        return friends.get(i);
+
+        if (friends != null && friends.size() >0)
+            return friends.get(i);
+        else
+            return null;
     }
 
     @Override
@@ -44,11 +51,11 @@ public class FriendAdapter extends BaseAdapter {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_item_personas, viewGroup, false);
+            view = inflater.inflate(R.layout.list_item_participantes, viewGroup, false);
         }
 
-        TextView name = (TextView)view.findViewById(R.id.name);
-        ImageButton button = (ImageButton)view.findViewById(R.id.button);
+        TextView name = (TextView)view.findViewById(R.id.nombre);
+        ImageButton button = (ImageButton)view.findViewById(R.id.boton_friends);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

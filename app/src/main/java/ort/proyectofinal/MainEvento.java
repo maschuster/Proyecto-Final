@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
@@ -53,21 +54,23 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     ArrayList<Usuario> friends;
     ArrayList<Participante> participantes;
     AccessToken accessToken;
-
+    FriendAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        accessToken = AccessToken.getCurrentAccessToken();
         setContentView(R.layout.activity_main_evento);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         TVdescripcion = (TextView) findViewById(R.id.descripcion);
         TVfecha = (TextView) findViewById(R.id.fecha);
         TVlugar = (TextView) findViewById(R.id.lugar);
-        TVdescripcion.setText(e.getDescripcion());
-        listparticipantes = (ListView) findViewById(R.id.listparticipantes);
 
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
+        TVdescripcion.setText(e.getDescripcion());
+        listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         String fecha = e.getFecha().substring(0, 10);
@@ -76,6 +79,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         objetos = new ArrayList<>();
         participantes = new ArrayList<>();
         accessToken = AccessToken.getCurrentAccessToken();
+        friends= new ArrayList<>();
 
         layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
         salirfab = findViewById(R.id.salirfab);
@@ -185,8 +189,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             }
         });
         facebookfriends();
-        FriendAdapter adapter = new FriendAdapter(getApplicationContext(),friends);
-        ListView listVwFriends = (ListView) findViewById(R.id.listVwFriends);
+        adapter = new FriendAdapter(getApplicationContext(),friends);
+        ListView listVwFriends = (ListView) dialogView.findViewById(R.id.listVwFriends);
         listVwFriends.setAdapter(adapter);
         AlertDialog b = dialogBuilder.create();
         b.show();
@@ -213,7 +217,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
+                    .addHeader("X-USER-ID",accessToken.getUserId())
                     .url(url + "agregarobjeto.php")
                     .post(body)
                     .build();
@@ -243,7 +247,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         protected ArrayList<Objeto> doInBackground(String... params) {
 
             Request request = new Request.Builder()
-                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
+                    .addHeader("X-USER-ID",accessToken.getUserId())
                     .url(url + "refreshobjetos.php" + "?idEvento=" + e.getIdEvento())
                     .build();
             try {
@@ -282,35 +286,39 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
 
     public void facebookfriends() {
-        new GraphRequest(
+
+        GraphRequest gr = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/{friend-list-id}/members",
+                "/"+accessToken.getUserId()+"/taggable_friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        if (response != null) {
-                            Log.v("", "FriendListRequestONComplete");
-                            try {
-                                JSONObject jsonObject = new JSONObject(response.getRawResponse());
-                                JSONArray d = jsonObject.getJSONArray("data");
-                                int l = (d != null ? d.length() : 0);
-                                for (int i = 0; i < l; i++) {
-                                    JSONObject o = d.getJSONObject(i);
-                                    String n = o.getString("name");
-                                    String id = o.getString("id");
-                                    Usuario f = new Usuario(id,n);
+                        if (response != null){
+                            Log.v("","FriendListRequestONComplete");
+                            try{
+                                JSONObject jsonObject=new JSONObject(response.getRawResponse());
+                                JSONArray d=jsonObject.getJSONArray("data");
+                                int l=(d!=null?d.length():0);
+                                for(int i=0;i<l;i++){
+                                    JSONObject o=d.getJSONObject(i);
+                                    String n=o.getString("name");
+                                    String id=o.getString("id");
+                                    Usuario f=new Usuario(id,n);
                                     friends.add(f);
                                 }
-
-                            } catch (JSONException e) {
+                            }catch(JSONException e){
                                 e.printStackTrace();
                             }
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 }
-        ).executeAsync();
+        );
+        gr.executeAsync();
+
     }
+
 
     public void FriendClicked( Usuario friend){
         AgregarParticipante(friend,e.getIdEvento());
@@ -332,7 +340,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
             Request request = new Request.Builder()
-                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
+                    .addHeader("X-USER-ID",accessToken.getUserId())
                     .url(url + "agregarparticipante.php")
                     .post(body)
                     .build();
@@ -362,7 +370,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         protected ArrayList<Participante> doInBackground(String... params) {
 
             Request request = new Request.Builder()
-                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
+                    .addHeader("X-USER-ID",accessToken.getUserId())
                     .url(url + "refreshparticipantes.php" + "?idEvento=" + e.getIdEvento())
                     .build();
             try {
