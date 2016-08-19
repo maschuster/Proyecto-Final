@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -30,9 +32,11 @@ public class AgregarEvento extends AppCompatActivity {
     ArrayList<Evento> eventos;
     DatePicker fechaDT;
     String mensaje;
+    AccessToken accessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_evento);
         nombreET = (EditText) findViewById(R.id.nombre);
@@ -40,6 +44,7 @@ public class AgregarEvento extends AppCompatActivity {
         descripcionET = (EditText) findViewById(R.id.descripcion);
         fechaDT = (DatePicker) findViewById(R.id.datePicker);
         eventos = new ArrayList<>();
+        accessToken = accessToken.getCurrentAccessToken();
     }
 
 
@@ -78,7 +83,7 @@ public class AgregarEvento extends AppCompatActivity {
                 json.put("fecha", fecha);
                 json.put("lugar", lugar);
                 json.put("descripcion", descripcion);
-                json.put("idAdmin", 1);
+                json.put("idAdmin", accessToken.getUserId());
                 json.put("foto", "foto.jpg");
 
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());

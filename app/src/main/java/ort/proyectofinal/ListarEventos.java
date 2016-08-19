@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -39,6 +40,8 @@ public class ListarEventos extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        accessToken = AccessToken.getCurrentAccessToken();
         setContentView(R.layout.activity_listar_eventos);
         TVnombre = (TextView) findViewById(R.id.nombre);
         TVfecha = (TextView) findViewById(R.id.fecha);
@@ -48,7 +51,6 @@ public class ListarEventos extends AppCompatActivity {
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
         Bundle extras = getIntent().getExtras();
         new EventosTask().execute(url);
-        accessToken = AccessToken.getCurrentAccessToken();
 
         listVW.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             public void onItemClick (AdapterView<?> adapter, View V, int position, long l){
@@ -83,8 +85,8 @@ public class ListarEventos extends AppCompatActivity {
         @Override
         protected ArrayList<Evento> doInBackground(String... params) {
             Request request = new Request.Builder()
-                    .addHeader("HTTP_X_USER_ID",accessToken.getUserId())
                     .url(url+"refresheventos.php")
+                    .addHeader("HTTP-X-USER-ID",accessToken.getUserId())
                     .build();
             try {
                 Response response = client.newCall(request).execute();

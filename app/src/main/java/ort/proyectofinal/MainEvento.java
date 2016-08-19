@@ -50,7 +50,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     private ListView list, listparticipantes;
     private View fab;
     ArrayList<Objeto> objetos;
-    ArrayList<Persona> personas;
     ArrayList<Usuario> friends;
     ArrayList<Participante> participantes;
     AccessToken accessToken;
