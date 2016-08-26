@@ -1,5 +1,6 @@
 package ort.proyectofinal;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,7 +43,6 @@ import java.util.ArrayList;
 public class MainEvento extends AppCompatActivity implements View.OnClickListener {
 
     public static String url = "http://eventospf2016.azurewebsites.net/";
-    GoogleMap map;
     Evento e;
     Toolbar toolbar;
     TextView TVdescripcion, TVfecha, TVlugar;
@@ -55,7 +55,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     ArrayList<Participante> participantes;
     AccessToken accessToken;
     FriendAdapter adapter;
-    int idEvento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +70,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
         TVdescripcion.setText(e.getDescripcion());
-        idEvento = e.getIdEvento();
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
@@ -152,7 +150,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
                 final int idEvento = e.getIdEvento();
-                AgregarObjetoSQL(nombre, precio, idEvento, idParticipante);
+                AgregarObjetoSQL(nombre, precio, idParticipante);
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -192,7 +190,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             }
         });
         facebookfriends();
-        adapter = new FriendAdapter(getApplicationContext(),friends);
+        adapter = new FriendAdapter(this,friends);
         ListView listVwFriends = (ListView) dialogView.findViewById(R.id.listVwFriends);
         listVwFriends.setAdapter(adapter);
         AlertDialog b = dialogBuilder.create();
@@ -202,7 +200,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
 
 
-    public void AgregarObjetoSQL(String nombre, int precio, int idEvento, int idParticipante) {
+    public void AgregarObjetoSQL(String nombre, int precio, int idParticipante) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -213,7 +211,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             JSONObject json = new JSONObject();
             json.put("nombre", nombre);
             json.put("precio", precio);
-            json.put("idEvento", idEvento);
+            json.put("idEvento", accessToken.getUserId());
             json.put("idParticipante", idParticipante);
             json.put("estado", "0");
 
@@ -332,7 +330,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject json = new JSONObject();
-            json.put("idEvento", idEvento);
+            json.put("idEvento", e.getIdEvento());
             json.put("idFacebook", f.getIdFacebook());
             json.put("nombre", f.getNombre());
 
@@ -370,7 +368,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
             Request request = new Request.Builder()
                     .addHeader("X-USER-ID",accessToken.getUserId())
-                    .url(url + "refreshparticipantes.php" + "?idEvento=" + idEvento)
+                    .url(url + "refreshparticipantes.php" + "?idEvento=" + e.getIdEvento())
                     .build();
             try {
                 Response response = client.newCall(request).execute();

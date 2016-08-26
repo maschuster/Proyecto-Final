@@ -17,9 +17,11 @@ public class FriendAdapter extends BaseAdapter {
 
     ArrayList<Usuario> friends;
     Context context;
+    MainEvento mEvento;
 
-    public FriendAdapter(Context context, ArrayList<Usuario> friends) {
-        this.context = context;
+    public FriendAdapter(MainEvento mEvento, ArrayList<Usuario> friends) {
+        this.context = mEvento.getApplicationContext();
+        this.mEvento = mEvento;
         this.friends=friends;
     }
 
@@ -61,7 +63,6 @@ public class FriendAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Usuario f = friends.get(position);
-                MainEvento mEvento= new MainEvento();
                 mEvento.AgregarParticipante(f);
             }
         });
