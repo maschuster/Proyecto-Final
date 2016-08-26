@@ -79,11 +79,11 @@ public class AgregarEvento extends AppCompatActivity {
                 OkHttpClient client = new OkHttpClient();
                 String url ="http://eventospf2016.azurewebsites.net/agregarevento.php";
                 JSONObject json = new JSONObject();
+                json.put("idAdmin", String.valueOf(accessToken.getUserId()));
                 json.put("nombre", nombre);
                 json.put("fecha", fecha);
                 json.put("lugar", lugar);
                 json.put("descripcion", descripcion);
-                json.put("idAdmin", accessToken.getUserId());
                 json.put("foto", "foto.jpg");
 
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());

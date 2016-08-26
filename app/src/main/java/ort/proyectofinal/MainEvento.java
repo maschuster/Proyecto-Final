@@ -290,8 +290,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
         GraphRequest gr = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                //"/"+accessToken.getUserId()+"/friends",
-                "/me/invitable_friends",
+                "/"+accessToken.getUserId()+"/friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
