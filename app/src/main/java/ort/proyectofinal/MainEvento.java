@@ -55,6 +55,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     ArrayList<Participante> participantes;
     AccessToken accessToken;
     FriendAdapter adapter;
+    int idEvento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
         TVdescripcion.setText(e.getDescripcion());
+        idEvento = e.getIdEvento();
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
@@ -179,13 +181,14 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             }
         });
         ImageButton button = (ImageButton)dialogView.findViewById(R.id.button);
+        button.setImageResource(R.drawable.ic_person_add_black_24dp);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 final String nombre = edt.getText().toString();
                 Usuario personavirtual = new Usuario("personavirtual",nombre);
-                AgregarParticipante(personavirtual, e.getIdEvento());
+                AgregarParticipante(personavirtual);
             }
         });
         facebookfriends();
@@ -289,7 +292,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
         GraphRequest gr = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/"+accessToken.getUserId()+"/taggable_friends",
+                //"/"+accessToken.getUserId()+"/friends",
+                "/me/invitable_friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
@@ -319,17 +323,12 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
     }
 
-
-    public void FriendClicked( Usuario friend){
-        AgregarParticipante(friend,e.getIdEvento());
-    }
-
-    public void AgregarParticipante(Usuario f, int idEvento){
+    public void AgregarParticipante(Usuario f){
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-
+        accessToken = AccessToken.getCurrentAccessToken();
         try {
             OkHttpClient client = new OkHttpClient();
             JSONObject json = new JSONObject();
@@ -371,7 +370,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
             Request request = new Request.Builder()
                     .addHeader("X-USER-ID",accessToken.getUserId())
-                    .url(url + "refreshparticipantes.php" + "?idEvento=" + e.getIdEvento())
+                    .url(url + "refreshparticipantes.php" + "?idEvento=" + idEvento)
                     .build();
             try {
                 Response response = client.newCall(request).execute();

@@ -61,7 +61,8 @@ public class FriendAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Usuario f = friends.get(position);
-                ((MainEvento)context).FriendClicked(f);
+                MainEvento mEvento= new MainEvento();
+                mEvento.AgregarParticipante(f);
             }
         });
         Usuario f = friends.get(position);
