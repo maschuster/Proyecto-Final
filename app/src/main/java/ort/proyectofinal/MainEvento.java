@@ -211,8 +211,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             JSONObject json = new JSONObject();
             json.put("nombre", nombre);
             json.put("precio", precio);
-            json.put("idEvento", accessToken.getUserId());
-            json.put("idParticipante", idParticipante);
+            json.put("idEvento", e.getIdEvento());
+            json.put("idParticipante", accessToken.getUserId());
             json.put("estado", "0");
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());

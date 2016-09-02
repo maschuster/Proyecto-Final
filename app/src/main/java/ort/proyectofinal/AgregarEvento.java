@@ -89,6 +89,7 @@ public class AgregarEvento extends AppCompatActivity {
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
                 Request request = new Request.Builder()
+                        .addHeader("X-USER-ID",accessToken.getUserId())
                         .url(url)
                         .post(body)
                         .build();
