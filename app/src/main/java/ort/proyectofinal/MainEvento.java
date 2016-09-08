@@ -55,6 +55,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     ArrayList<Participante> participantes;
     AccessToken accessToken;
     FriendAdapter adapter;
+    MainEvento mEvento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         participantes = new ArrayList<>();
         accessToken = AccessToken.getCurrentAccessToken();
         friends= new ArrayList<>();
+        mEvento = this;
 
         layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
         salirfab = findViewById(R.id.salirfab);
@@ -99,8 +101,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             }
         });
 
-        new ObjetosTask().execute(url);
         new ParticipantesTask().execute(url);
+        new ObjetosTask().execute(url);
     }
 
     @Override
@@ -133,6 +135,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         for (Participante item : participantes) {
             participantesAL.add(item.getNombre());
         }
+        participantesAL.add("Sin Asignar");
         ArrayAdapter<String> partAdapter;
         partAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, participantesAL);
         partAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -144,13 +147,16 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(DialogInterface dialog, int whichButton) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
-                final int idParticipantePosition = spinner.getSelectedItemPosition();
-                Participante p = participantes.get(idParticipantePosition);
-                final int idParticipante = p.getIdParticipante();
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
-                final int idEvento = e.getIdEvento();
-                AgregarObjetoSQL(nombre, precio, idParticipante);
+                if(spinner.getSelectedItem().toString() == "Sin Asignar"){
+                    AgregarObjetoSQL(nombre, precio, 0);
+                }else{
+                    final int idParticipantePosition = spinner.getSelectedItemPosition();
+                    Participante p = participantes.get(idParticipantePosition);
+                    final int idParticipante = p.getIdParticipante();
+                    AgregarObjetoSQL(nombre, precio, idParticipante);
+                }
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -212,7 +218,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             json.put("nombre", nombre);
             json.put("precio", precio);
             json.put("idEvento", e.getIdEvento());
-            json.put("idParticipante", accessToken.getUserId());
+            json.put("idParticipante", idParticipante);
             json.put("estado", "0");
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
@@ -239,7 +245,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             super.onPostExecute(objetosResult);
             if (!objetosResult.isEmpty()) {
                 objetos = objetosResult;
-                ObjetoAdapter adapter = new ObjetoAdapter(getApplicationContext(), objetosResult);
+                ObjetoAdapter adapter = new ObjetoAdapter(mEvento , objetosResult);
                 list.setAdapter(adapter);
             }
         }
@@ -270,12 +276,13 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 String nombre = jsonResultado.getString("nombre");
                 int precio = jsonResultado.getInt("precio");
                 int estado = jsonResultado.getInt("estado");
+                int idParticipante = jsonResultado.getInt("idParticipante");
                 if (estado == 1) {
                     checked = true;
                 } else {
                     checked = false;
                 }
-                Objeto o = new Objeto(nombre, precio, idObjeto, checked);
+                Objeto o = new Objeto(nombre, precio, idObjeto, checked, idParticipante);
                 objetos.add(o);
             }
             return objetos;

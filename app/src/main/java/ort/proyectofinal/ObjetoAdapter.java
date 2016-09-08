@@ -29,9 +29,11 @@ public class ObjetoAdapter extends BaseAdapter {
 
     ArrayList<Objeto> objetos;
     Context context;
+    MainEvento mEvento;
 
-    public ObjetoAdapter(Context context, ArrayList<Objeto> objetos) {
-        this.context = context;
+    public ObjetoAdapter(MainEvento mEvento, ArrayList<Objeto> objetos) {
+        this.context = mEvento.getApplicationContext();
+        this.mEvento = mEvento;
         this.objetos=objetos;
     }
 
@@ -61,6 +63,7 @@ public class ObjetoAdapter extends BaseAdapter {
 
         TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
         TextView precioTV = (TextView)view.findViewById(R.id.precio);
+        TextView participanteTV = (TextView)view.findViewById(R.id.participante);
         CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkboxobjeto);
 
         checkBox.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +77,14 @@ public class ObjetoAdapter extends BaseAdapter {
         Objeto o = objetos.get(position);
         precioTV.setText(String.valueOf(o.getPrecio()));
         nombreTV.setText(String.valueOf(o.getNombre()));
+        for(Participante p : mEvento.participantes){
+            if(p.getIdParticipante() == o.getIdParticipante()){
+                participanteTV.setText(String.valueOf(p.getNombre()));
+                break;
+            }else{
+                participanteTV.setText(String.valueOf("(Sin Asignar)"));
+            }
+        }
         checkBox.setChecked(o.isChecked());
         return view;
     }

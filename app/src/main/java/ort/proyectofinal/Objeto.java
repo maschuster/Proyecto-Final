@@ -8,6 +8,7 @@ public class Objeto {
     int idObjeto;
     String nombre;
     int precio;
+    int idParticipante;
     boolean checked;
 
     public boolean isChecked() {
@@ -18,11 +19,12 @@ public class Objeto {
         this.checked = checked;
     }
 
-    public Objeto(String nombre, int precio, int idobjeto, boolean checked) {
+    public Objeto(String nombre, int precio, int idobjeto, boolean checked, int idParticipante) {
         this.nombre = nombre;
         this.precio = precio;
         this.idObjeto = idobjeto;
         this.checked = checked;
+        this.idParticipante = idParticipante;
     }
 
     public int getIdObjeto() {
@@ -47,5 +49,13 @@ public class Objeto {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public int getIdParticipante() {
+        return idParticipante;
+    }
+
+    public void setIdParticipante(int idParticipante) {
+        this.idParticipante = idParticipante;
     }
 }

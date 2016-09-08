@@ -71,7 +71,6 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         accessToken = loginResult.getAccessToken();
-                        //new authenticationTask().execute();
                         authentication(accessToken);
                         Intent intent = new Intent(MainActivity.this, ListarEventos.class);
 
@@ -89,6 +88,11 @@ public class MainActivity extends FragmentActivity {
                         // App code
                     }
                 });
+        if(AccessToken.getCurrentAccessToken() != null){
+            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
+            startActivity(intent);
+            System.out.println("Success");
+        }
     }
 
     @Override
