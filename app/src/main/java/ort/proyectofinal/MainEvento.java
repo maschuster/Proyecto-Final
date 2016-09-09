@@ -311,7 +311,14 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                     String n=o.getString("name");
                                     String id=o.getString("id");
                                     Usuario f=new Usuario(id,n);
-                                    friends.add(f);
+                                    for(Participante p : participantes){
+                                        if(p.getIdFacebook() == f.getIdFacebook()){
+
+                                        }else{
+                                            friends.add(f);
+                                            break;
+                                        }
+                                    }
                                 }
                             }catch(JSONException e){
                                 e.printStackTrace();
