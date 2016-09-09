@@ -103,6 +103,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
         new ParticipantesTask().execute(url);
         new ObjetosTask().execute(url);
+        facebookfriends();
     }
 
     @Override
@@ -195,15 +196,12 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 AgregarParticipante(personavirtual);
             }
         });
-        facebookfriends();
         adapter = new FriendAdapter(this,friends);
         ListView listVwFriends = (ListView) dialogView.findViewById(R.id.listVwFriends);
         listVwFriends.setAdapter(adapter);
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
-
-
 
 
     public void AgregarObjetoSQL(String nombre, int precio, int idParticipante) {
@@ -237,7 +235,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         new ObjetosTask().execute(url);
     }
 
-    private class ObjetosTask extends AsyncTask<String, Void, ArrayList<Objeto>> {
+    public class ObjetosTask extends AsyncTask<String, Void, ArrayList<Objeto>> {
         private OkHttpClient client = new OkHttpClient();
 
         @Override
@@ -318,7 +316,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                             }catch(JSONException e){
                                 e.printStackTrace();
                             }
-                            adapter.notifyDataSetChanged();
+                            //adapter.notifyDataSetChanged();
                         }
                     }
                 }
@@ -402,4 +400,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
     }
 
+    public void ActualizarObjetoTask(){
+        new ObjetosTask().execute(url);
+    }
 }

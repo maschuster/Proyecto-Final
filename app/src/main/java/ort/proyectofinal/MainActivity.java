@@ -99,6 +99,11 @@ public class MainActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        if(AccessToken.getCurrentAccessToken() != null){
+            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
+            startActivity(intent);
+            System.out.println("Success");
+        }
     }
 
     public void authentication(AccessToken accessToken){
