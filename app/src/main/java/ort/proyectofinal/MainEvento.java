@@ -119,7 +119,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 showChangeLangDialogParticipante();
                 break;
             case R.id.four:
-                Toast.makeText(this, "Sin Acciones", Toast.LENGTH_SHORT).show();
+                //asd
                 break;
         }
     }
@@ -202,7 +202,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
-
 
     public void AgregarObjetoSQL(String nombre, int precio, int idParticipante) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -307,17 +306,20 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                 JSONArray d=jsonObject.getJSONArray("data");
                                 int l=(d!=null?d.length():0);
                                 for(int i=0;i<l;i++){
+                                    boolean caca = false;
                                     JSONObject o=d.getJSONObject(i);
                                     String n=o.getString("name");
                                     String id=o.getString("id");
                                     Usuario f=new Usuario(id,n);
                                     for(Participante p : participantes){
-                                        if(p.getIdFacebook() == f.getIdFacebook()){
-
-                                        }else{
-                                            friends.add(f);
+                                        if(p.getIdFacebook().equals(f.getIdFacebook())){
+                                            friends.remove(f);
+                                            caca=true;
                                             break;
                                         }
+                                    }
+                                    if(caca==false){
+                                        friends.add(f);
                                     }
                                 }
                             }catch(JSONException e){

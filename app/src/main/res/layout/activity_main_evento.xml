@@ -64,7 +64,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:scaleType="centerInside"
-                android:src="@drawable/abc_ic_menu_cut_mtrl_alpha"/>
+                android:src="@drawable/ic_notifications_active_black_24dp"/>
 
             <ImageView
                 android:id="@+id/three"

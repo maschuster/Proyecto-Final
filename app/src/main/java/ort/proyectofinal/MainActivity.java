@@ -61,6 +61,11 @@ public class MainActivity extends FragmentActivity {
         } catch (NoSuchAlgorithmException e) {
 
         }
+        if(AccessToken.getCurrentAccessToken() != null){
+            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
+            startActivity(intent);
+            System.out.println("Success");
+        }
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
