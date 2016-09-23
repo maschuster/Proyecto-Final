@@ -80,11 +80,19 @@ public class ObjetoAdapter extends BaseAdapter {
             }
         });
         Objeto o = objetos.get(position);
-        precioTV.setText(String.valueOf(o.getPrecio()));
+        String precio = "$";
+        precioTV.setText(precio + String.valueOf(o.getPrecio()));
         nombreTV.setText(String.valueOf(o.getNombre()));
         for(Participante p : mEvento.participantes){
             if(p.getIdParticipante() == o.getIdParticipante()){
-                participanteTV.setText(String.valueOf(p.getNombre()));
+                String nombre = p.getNombre();
+                if(nombre.indexOf(" ") == -1){
+                    participanteTV.setText(nombre);
+                }else {
+                    int posicion = nombre.indexOf(" ");
+                    nombre = nombre.substring(0, posicion);
+                    participanteTV.setText(nombre);
+                }
                 break;
             }else{
                 participanteTV.setText(String.valueOf("(Sin Asignar)"));
