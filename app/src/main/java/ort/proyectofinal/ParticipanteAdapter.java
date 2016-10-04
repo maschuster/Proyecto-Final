@@ -1,12 +1,19 @@
 package ort.proyectofinal;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -16,9 +23,11 @@ public class ParticipanteAdapter extends BaseAdapter {
 
     ArrayList<Participante> participantes;
     Context context;
+    MainEvento mEvento;
 
-    public ParticipanteAdapter(Context context, ArrayList<Participante> participantes) {
-        this.context = context;
+    public ParticipanteAdapter(MainEvento mEvento, ArrayList<Participante> participantes) {
+        this.context = mEvento.getApplicationContext();
+        this.mEvento = mEvento;
         this.participantes=participantes;
     }
 
@@ -47,8 +56,14 @@ public class ParticipanteAdapter extends BaseAdapter {
         }
 
         TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
+        ImageView fotoIV = (ImageView)view.findViewById(R.id.image_participante);
         Participante p = participantes.get(position);
         nombreTV.setText(String.valueOf(p.getNombre()));
+        if(p.getIdFacebook() == "personavirtual"){
+            Picasso.with(context).load(R.drawable.participante_default).transform(new CircleTransform()).into(fotoIV);
+        }else{
+            Picasso.with(context).load(R.drawable.participante_default).transform(new CircleTransform()).into(fotoIV);
+        }
         return view;
     }
 }

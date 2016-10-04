@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +85,8 @@ public class ObjetoAdapter extends BaseAdapter {
         String precio = "$";
         precioTV.setText(precio + String.valueOf(o.getPrecio()));
         nombreTV.setText(String.valueOf(o.getNombre()));
+        ImageView fotoIV = (ImageView)view.findViewById(R.id.image_participante_obj);
+        Picasso.with(context).load(R.drawable.participante_default).transform(new CircleTransform()).into(fotoIV);
         for(Participante p : mEvento.participantes){
             if(p.getIdParticipante() == o.getIdParticipante()){
                 String nombre = p.getNombre();

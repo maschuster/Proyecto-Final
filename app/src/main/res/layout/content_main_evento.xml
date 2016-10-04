@@ -15,76 +15,66 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:weightSum="1">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:textColor="#FF6D00"
-            android:textSize="25dp"
-            android:hint="descripcion"
-            android:textStyle="bold"
-            android:id="@+id/descripcion"/>
+        android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center_horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textSize="25dp"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                android:hint="Fecha:"
-                android:id="@+id/titulofecha"/>
+            android:orientation="horizontal">
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginLeft="50dp"
-                android:textSize="25dp"
-                android:textColor="#FF6D00"
-                android:hint="Fecha:"
-                android:id="@+id/fecha"/>
+                <ImageButton
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="#00000000"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/imagen_evento"/>
 
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center_horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:textColor="#FF6D00"
-                android:textStyle="bold"
-                android:textSize="25dp"
-                android:hint="Lugar:"
-                android:id="@+id/lugartext"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:textSize="15dp"
+                            android:textColor="#FF6D00"
+                            android:id="@+id/fecha"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginLeft="50dp"
-                android:textSize="25dp"
-                android:textColor="#FF6D00"
-                android:hint="Fecha:"
-                android:id="@+id/lugar"/>
-        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:textSize="15dp"
+                            android:textColor="#FF6D00"
+                            android:id="@+id/lugar"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FF6D00"
+                        android:layout_marginTop="5dp"
+                        android:textSize="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:hint="descripcion"
+                        android:id="@+id/descripcion"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
 
         <LinearLayout
         android:orientation="vertical"
@@ -96,9 +86,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:textSize="25dp"
+                android:textSize="20dp"
                 android:textColor="#000000"
-                android:textStyle="bold"
                 android:hint="Compras:"
                 android:id="@+id/compras"/>
 
@@ -108,7 +97,7 @@
                 android:layout_height="wrap_content" >
             </ort.proyectofinal.NonScrollListView>
 
-    </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
@@ -120,14 +109,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:textSize="25dp"
+                android:textSize="20dp"
                 android:textColor="#000000"
-                android:textStyle="bold"
-                android:hint="Personas:"
+                android:hint="Invitados:"
                 android:id="@+id/personas"/>
 
             <ort.proyectofinal.NonScrollListView
                 android:id="@+id/listparticipantes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ort.proyectofinal.NonScrollListView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textSize="20dp"
+                android:textColor="#000000"
+                android:hint="Decisiones:" />
+
+            <ort.proyectofinal.NonScrollListView
+                android:id="@+id/listvotaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </ort.proyectofinal.NonScrollListView>

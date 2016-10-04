@@ -8,18 +8,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/boton_friends"/>
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/image_participante"
+        android:scaleType="centerCrop"/>
 
     <TextView
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
         android:id="@+id/nombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
         android:textColor="#000000"/>
 
     </LinearLayout>

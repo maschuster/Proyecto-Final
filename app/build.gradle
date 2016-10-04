@@ -32,4 +32,5 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.android.support:support-v4:23.4.0'
+    compile files('src/libs/picasso-2.5.2.jar')
 }

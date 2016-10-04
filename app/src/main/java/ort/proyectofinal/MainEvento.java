@@ -31,6 +31,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     private View salirfab, agregarobjetofab, three, four;
     private ListView list, listparticipantes;
     private View fab;
+    ImageButton imgevento;
     ArrayList<Objeto> objetos;
     ArrayList<Usuario> friends;
     ArrayList<Participante> participantes;
@@ -67,6 +69,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVdescripcion = (TextView) findViewById(R.id.descripcion);
         TVfecha = (TextView) findViewById(R.id.fecha);
         TVlugar = (TextView) findViewById(R.id.lugar);
+        imgevento = (ImageButton) findViewById(R.id.imagen_evento);
 
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
@@ -77,6 +80,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         String fecha = e.getFecha().substring(0, 10);
         TVfecha.setText(fecha);
         TVlugar.setText(e.getLugar());
+        Picasso.with(getApplicationContext()).load(R.drawable.evento_default).transform(new CircleTransform()).into(imgevento);
+
         objetos = new ArrayList<>();
         participantes = new ArrayList<>();
         accessToken = AccessToken.getCurrentAccessToken();
@@ -203,6 +208,9 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         b.show();
     }
 
+
+
+
     public void AgregarObjetoSQL(String nombre, int precio, int idParticipante) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -288,8 +296,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     }
 
 
-
-
     public void facebookfriends() {
 
         GraphRequest gr = new GraphRequest(
@@ -306,7 +312,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                 JSONArray d=jsonObject.getJSONArray("data");
                                 int l=(d!=null?d.length():0);
                                 for(int i=0;i<l;i++){
-                                    boolean caca = false;
+                                    boolean existe = false;
                                     JSONObject o=d.getJSONObject(i);
                                     String n=o.getString("name");
                                     String id=o.getString("id");
@@ -314,11 +320,11 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                     for(Participante p : participantes){
                                         if(p.getIdFacebook().equals(f.getIdFacebook())){
                                             friends.remove(f);
-                                            caca=true;
+                                            existe=true;
                                             break;
                                         }
                                     }
-                                    if(caca==false){
+                                    if(existe==false){
                                         friends.add(f);
                                     }
                                 }
@@ -371,7 +377,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             super.onPostExecute(participantesResult);
             if (!participantesResult.isEmpty()) {
                 participantes = participantesResult;
-                ParticipanteAdapter adapter = new ParticipanteAdapter(getApplicationContext(), participantesResult);
+                ParticipanteAdapter adapter = new ParticipanteAdapter(mEvento, participantesResult);
                 listparticipantes.setAdapter(adapter);               //LISTPARTICIPANTES
             }
         }
