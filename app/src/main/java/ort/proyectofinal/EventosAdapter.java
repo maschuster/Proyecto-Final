@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import ort.proyectofinal.Clases.Evento;
+
 /**
  * Created by Schuster on 25/05/2016.
  */

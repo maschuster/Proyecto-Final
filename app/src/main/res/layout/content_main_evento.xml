@@ -91,11 +91,11 @@
                 android:hint="Compras:"
                 android:id="@+id/compras"/>
 
-            <ort.proyectofinal.NonScrollListView
+            <ort.proyectofinal.Clases.NonScrollListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
-            </ort.proyectofinal.NonScrollListView>
+            </ort.proyectofinal.Clases.NonScrollListView>
 
         </LinearLayout>
 
@@ -114,11 +114,11 @@
                 android:hint="Invitados:"
                 android:id="@+id/personas"/>
 
-            <ort.proyectofinal.NonScrollListView
+            <ort.proyectofinal.Clases.NonScrollListView
                 android:id="@+id/listparticipantes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
-            </ort.proyectofinal.NonScrollListView>
+            </ort.proyectofinal.Clases.NonScrollListView>
 
         </LinearLayout>
 
@@ -136,11 +136,11 @@
                 android:textColor="#000000"
                 android:hint="Decisiones:" />
 
-            <ort.proyectofinal.NonScrollListView
+            <ort.proyectofinal.Clases.NonScrollListView
                 android:id="@+id/listvotaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
-            </ort.proyectofinal.NonScrollListView>
+            </ort.proyectofinal.Clases.NonScrollListView>
 
         </LinearLayout>
 

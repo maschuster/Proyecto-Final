@@ -1,9 +1,6 @@
 package ort.proyectofinal;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +10,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
+
+import ort.proyectofinal.Clases.CircleTransform;
+import ort.proyectofinal.Clases.Participante;
 
 /**
  * Created by Schuster on 30/07/2016.

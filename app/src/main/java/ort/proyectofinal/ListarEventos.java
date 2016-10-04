@@ -3,7 +3,6 @@ package ort.proyectofinal;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,10 +13,8 @@ import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
@@ -26,6 +23,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import ort.proyectofinal.Clases.Evento;
+import ort.proyectofinal.Clases.Usuario;
 
 public class ListarEventos extends AppCompatActivity {
 

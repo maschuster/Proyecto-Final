@@ -1,16 +1,24 @@
-package ort.proyectofinal;
-
+package ort.proyectofinal.Clases;
 import java.io.Serializable;
 
-public class Usuario implements Serializable {
+public class Participante implements Serializable {
+    int idParticipante;
     String idFacebook;
     String nombre;
 
-    public Usuario(String idFacebook, String nombre) {
+    public Participante(int idParticipante, String idFacebook, String nombre) {
+        this.idParticipante = idParticipante;
         this.idFacebook = idFacebook;
         this.nombre = nombre;
     }
 
+    public int getIdParticipante() {
+        return idParticipante;
+    }
+
+    public void setIdParticipante(int idParticipante) {
+        this.idParticipante = idParticipante;
+    }
 
     public String getIdFacebook() {
         return idFacebook;
@@ -28,4 +36,3 @@ public class Usuario implements Serializable {
         this.nombre = nombre;
     }
 }
-

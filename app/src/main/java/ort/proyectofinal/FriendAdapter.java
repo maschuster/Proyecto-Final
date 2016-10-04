@@ -18,6 +18,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import ort.proyectofinal.Clases.CircleTransform;
+import ort.proyectofinal.Clases.Usuario;
+
 /**
  * Created by Schuster on 29/07/2016.
  */

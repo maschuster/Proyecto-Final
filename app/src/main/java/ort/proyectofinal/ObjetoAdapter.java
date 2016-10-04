@@ -28,6 +28,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ort.proyectofinal.Clases.CircleTransform;
+import ort.proyectofinal.Clases.Objeto;
+import ort.proyectofinal.Clases.Participante;
+
 /**
  * Created by Schuster on 29/05/2016.
  */

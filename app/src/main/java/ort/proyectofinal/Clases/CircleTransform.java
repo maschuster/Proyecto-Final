@@ -1,4 +1,4 @@
-package ort.proyectofinal;
+package ort.proyectofinal.Clases;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;

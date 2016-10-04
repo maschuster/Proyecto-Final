@@ -1,4 +1,4 @@
-package ort.proyectofinal;
+package ort.proyectofinal.Clases;
 
 /**
  * Created by Schuster on 29/05/2016.

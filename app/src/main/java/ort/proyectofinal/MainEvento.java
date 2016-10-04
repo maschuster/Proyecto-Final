@@ -1,6 +1,5 @@
 package ort.proyectofinal;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -25,7 +23,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.github.fafaldo.fabtoolbar.widget.FABToolbarLayout;
-import com.google.android.gms.maps.GoogleMap;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -40,6 +37,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ort.proyectofinal.Clases.CircleTransform;
+import ort.proyectofinal.Clases.Evento;
+import ort.proyectofinal.Clases.Objeto;
+import ort.proyectofinal.Clases.Participante;
+import ort.proyectofinal.Clases.Usuario;
+import ort.proyectofinal.Clases.Votacion;
+
 
 public class MainEvento extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,12 +53,13 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     TextView TVdescripcion, TVfecha, TVlugar;
     private FABToolbarLayout layout;
     private View salirfab, agregarobjetofab, three, four;
-    private ListView list, listparticipantes;
+    private ListView list, listparticipantes, listvotaciones;
     private View fab;
     ImageButton imgevento;
     ArrayList<Objeto> objetos;
     ArrayList<Usuario> friends;
     ArrayList<Participante> participantes;
+    ArrayList<Votacion> votaciones;
     AccessToken accessToken;
     FriendAdapter adapter;
     MainEvento mEvento;
@@ -75,6 +80,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         e = (Evento) extras.getSerializable("evento");
         TVdescripcion.setText(e.getDescripcion());
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
+        listvotaciones = (ListView) findViewById(R.id.listvotaciones);
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         String fecha = e.getFecha().substring(0, 10);
@@ -108,6 +114,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
         new ParticipantesTask().execute(url);
         new ObjetosTask().execute(url);
+        new VotacionesTask().execute();
         facebookfriends();
     }
 
@@ -291,6 +298,61 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 objetos.add(o);
             }
             return objetos;
+        }
+
+    }
+
+    public class VotacionesTask extends AsyncTask<String, Void, ArrayList<Votacion>> {
+        private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPostExecute(ArrayList<Votacion> votacionesResult) {
+            super.onPostExecute(votacionesResult);
+            if (!votacionesResult.isEmpty()) {
+                votaciones = votacionesResult;
+                VotacionAdapter adapter = new VotacionAdapter(mEvento , votacionesResult);
+                listvotaciones.setAdapter(adapter);
+            }
+        }
+
+        @Override
+        protected ArrayList<Votacion> doInBackground(String... params) {
+            String idParticipante = "0";
+            for (Participante p: participantes) {
+                if(accessToken.getUserId().equals(p.getIdFacebook())){
+                    idParticipante = String.valueOf(p.getIdParticipante());
+                }
+            }
+            Request request = new Request.Builder()
+                    .addHeader("X-USER-ID",accessToken.getUserId())
+                    .addHeader("X-PARTICIPANTE-ID",idParticipante)
+                    .url(url + "refreshpreguntas.php" + "?idEvento=" + e.getIdEvento())
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                return parsearResultado(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return new ArrayList<Votacion>();
+            }
+        }
+
+        ArrayList<Votacion> parsearResultado(String JSONstr) throws JSONException {
+            ArrayList<Votacion> votaciones = new ArrayList<>();
+            JSONArray jsonVotaciones = new JSONArray(JSONstr);
+            for (int i = 0; i < jsonVotaciones.length(); i++) {
+                JSONObject jsonResultado = jsonVotaciones.getJSONObject(i);
+                int idPregunta = jsonResultado.getInt("idPregunta");
+                int idEvento = jsonResultado.getInt("idEvento");
+                String pregunta = jsonResultado.getString("pregunta");
+                int afirmativos = jsonResultado.getInt("afirmativos");
+                int negativos = jsonResultado.getInt("negativos");
+                int voto = jsonResultado.getInt("voto");
+
+                Votacion v = new Votacion(idPregunta, idEvento, pregunta, afirmativos, negativos,voto);
+                votaciones.add(v);
+            }
+            return votaciones;
         }
 
     }
