@@ -131,7 +131,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 showChangeLangDialogParticipante();
                 break;
             case R.id.four:
-                //asd
+                showChangeLangDialogVotacion();
                 break;
         }
     }
@@ -215,8 +215,59 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         b.show();
     }
 
+    public void showChangeLangDialogVotacion() {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.agregar_pregunta, null);
+        dialogBuilder.setView(dialogView);
+
+        dialogBuilder.setTitle("Agregar Nueva Pregunta");
+        dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                final EditText preguntaET = (EditText) dialogView.findViewById(R.id.preguntaET);
+                String pregunta = preguntaET.getText().toString();
+                AgregarPreguntaSQL(pregunta);
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
 
 
+
+
+    public void AgregarPreguntaSQL(String pregunta){
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
+        try {
+            OkHttpClient client = new OkHttpClient();
+            JSONObject json = new JSONObject();
+            json.put("pregunta", pregunta);
+            json.put("idEvento", e.getIdEvento());
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            Request request = new Request.Builder()
+                    .addHeader("X-USER-ID",accessToken.getUserId())
+                    .url("http://eventospf2016.azurewebsites.net/agregarpregunta.php")
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            Log.d("Response", response.body().string());
+        } catch (IOException | JSONException e) {
+            Log.d("Error", e.getMessage());
+        }
+        new VotacionesTask().execute();
+    }
 
     public void AgregarObjetoSQL(String nombre, int precio, int idParticipante) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -356,7 +407,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         }
 
     }
-
 
     public void facebookfriends() {
 
