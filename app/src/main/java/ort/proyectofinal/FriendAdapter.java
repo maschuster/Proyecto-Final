@@ -97,7 +97,7 @@ public class FriendAdapter extends BaseAdapter {
                     public void onCompleted(GraphResponse response) {
                         try {
                             JSONObject data = response.getJSONObject();
-                                String profilePicUrl = String.valueOf(data);
+                            String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
                                 Picasso.with(context).load(profilePicUrl).transform(new CircleTransform()).into(button);
                         } catch (Exception e) {
                             e.printStackTrace();

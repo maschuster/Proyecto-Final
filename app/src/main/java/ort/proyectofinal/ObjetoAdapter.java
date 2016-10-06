@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -148,10 +150,40 @@ public class ObjetoAdapter extends BaseAdapter {
                 b.show();
             }
         });
+
+        precioTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mEvento);
+                LayoutInflater inflater = mEvento.getLayoutInflater();
+
+                final View dialogView = inflater.inflate(R.layout.cambiar_precio, null);
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.setTitle("Cambiar Precio");
+                dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        EditText precioET = (EditText) dialogView.findViewById(R.id.precioET);
+                        int precio = Integer.parseInt(precioET.getText().toString());
+                        if(String.valueOf(precio).equals("")){
+                            Toast.makeText(mEvento, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
+                        }else {
+                            ModificarObjetoSQL(position, 2, precio);
+                        }
+                    }
+                });
+                dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+            }
+        });
+
         return view;
     }
 
-    public void ModificarObjetoSQL (int position, int tipomod, int idParticipante) {
+    public void ModificarObjetoSQL (int position, int tipomod, int idParticipanteoPrecio) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -169,8 +201,11 @@ public class ObjetoAdapter extends BaseAdapter {
                 }else{
                     json.put("estado", "0");
                 }
-            }else{
-                json.put("idParticipante", idParticipante);//Este position en realidad es idParticipante.
+            }if(tipomod==1){
+                json.put("idParticipante", idParticipanteoPrecio);
+            }
+            if (tipomod ==2){
+                json.put("precio", idParticipanteoPrecio);
             }
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
 
@@ -184,7 +219,7 @@ public class ObjetoAdapter extends BaseAdapter {
         } catch (IOException | JSONException e) {
             Log.d("Error", e.getMessage());
         }
-        if(tipomod ==1){
+        if(tipomod ==1  || tipomod==2){
             mEvento.ActualizarObjetoTask();
         }
     }
