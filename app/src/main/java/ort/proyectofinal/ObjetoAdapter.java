@@ -83,6 +83,7 @@ public class ObjetoAdapter extends BaseAdapter {
                 CheckBox cb = (CheckBox) v;
                 objetos.get(position).setChecked(cb.isChecked());
                 ModificarObjetoSQL(position,0,objetos.get(position).getIdParticipante());
+                mEvento.ActualizarGastos();
             }
         });
         Objeto o = objetos.get(position);

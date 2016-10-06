@@ -144,6 +144,28 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textSize="20dp"
+                android:textColor="#000000"
+                android:hint="Gastos:" />
+
+            <ort.proyectofinal.Clases.NonScrollListView
+                android:id="@+id/listgastos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ort.proyectofinal.Clases.NonScrollListView>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

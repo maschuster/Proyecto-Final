@@ -145,5 +145,6 @@ public class VotacionAdapter  extends BaseAdapter {
         } catch (IOException | JSONException e) {
             Log.d("Error", e.getMessage());
         }
+        mEvento.ActualizarVotacionesTask();
     }
 }

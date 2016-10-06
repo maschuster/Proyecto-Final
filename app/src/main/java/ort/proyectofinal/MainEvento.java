@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -53,7 +54,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     TextView TVdescripcion, TVfecha, TVlugar;
     private FABToolbarLayout layout;
     private View salirfab, agregarobjetofab, three, four;
-    private ListView list, listparticipantes, listvotaciones;
+    private ListView list, listparticipantes, listvotaciones, listgastos;
     private View fab;
     ImageButton imgevento;
     ArrayList<Objeto> objetos;
@@ -81,6 +82,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVdescripcion.setText(e.getDescripcion());
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         listvotaciones = (ListView) findViewById(R.id.listvotaciones);
+        listgastos = (ListView) findViewById(R.id.listgastos);
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         String fecha = e.getFecha().substring(0, 10);
@@ -154,21 +156,24 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         partAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         spinner.setAdapter(partAdapter);
 
-        dialogBuilder.setTitle("Agregar Nuevo Objeto");
-        dialogBuilder.setMessage("Ingrese los datos");
+        dialogBuilder.setTitle("Agregar Nueva Compra");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
-                if(spinner.getSelectedItem().toString() == "Sin Asignar"){
-                    AgregarObjetoSQL(nombre, precio, 0);
-                }else{
-                    final int idParticipantePosition = spinner.getSelectedItemPosition();
-                    Participante p = participantes.get(idParticipantePosition);
-                    final int idParticipante = p.getIdParticipante();
-                    AgregarObjetoSQL(nombre, precio, idParticipante);
+                if(nombre.equals("") && precio <0){
+                    Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
+                }else {
+                    if (spinner.getSelectedItem().toString() == "Sin Asignar") {
+                        AgregarObjetoSQL(nombre, precio, 0);
+                    } else {
+                        final int idParticipantePosition = spinner.getSelectedItemPosition();
+                        Participante p = participantes.get(idParticipantePosition);
+                        final int idParticipante = p.getIdParticipante();
+                        AgregarObjetoSQL(nombre, precio, idParticipante);
+                    }
                 }
             }
         });
@@ -188,7 +193,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         dialogBuilder.setView(dialogView);
 
         dialogBuilder.setTitle("Agregar Nuevo Participante");
-        dialogBuilder.setMessage("Ingrese los datos");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
@@ -204,6 +208,9 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(View v) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 final String nombre = edt.getText().toString();
+                if(nombre.equals("")){
+                    Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
+                }
                 Usuario personavirtual = new Usuario("personavirtual",nombre);
                 AgregarParticipante(personavirtual);
             }
@@ -227,7 +234,11 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(DialogInterface dialog, int whichButton) {
                 final EditText preguntaET = (EditText) dialogView.findViewById(R.id.preguntaET);
                 String pregunta = preguntaET.getText().toString();
-                AgregarPreguntaSQL(pregunta);
+                if(pregunta.equals("")){
+                    Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
+                }else {
+                    AgregarPreguntaSQL(pregunta);
+                }
             }
         });
         dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -310,6 +321,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 objetos = objetosResult;
                 ObjetoAdapter adapter = new ObjetoAdapter(mEvento , objetosResult);
                 list.setAdapter(adapter);
+
+                ActualizarGastos();
             }
         }
 
@@ -529,5 +542,13 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
     public void ActualizarObjetoTask(){
         new ObjetosTask().execute(url);
+    }
+    public void ActualizarVotacionesTask(){
+        new VotacionesTask().execute(url);
+    }
+
+    public void ActualizarGastos(){
+        GastosAdapter adapterg = new GastosAdapter(mEvento,participantes,objetos);
+        listgastos.setAdapter(adapterg);
     }
 }
