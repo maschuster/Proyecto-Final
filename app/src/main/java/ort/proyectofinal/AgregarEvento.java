@@ -2,14 +2,18 @@ package ort.proyectofinal;
 
 
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -25,6 +29,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ort.proyectofinal.Clases.AutocompleteCustomArrayAdapter;
+import ort.proyectofinal.Clases.CustomAutoCompleteTextChangedListener;
+import ort.proyectofinal.Clases.CustomAutoCompleteView;
 import ort.proyectofinal.Clases.Evento;
 
 
@@ -36,13 +43,55 @@ public class AgregarEvento extends AppCompatActivity {
     String mensaje;
     AccessToken accessToken;
 
+    public CustomAutoCompleteView myAutoComplete;
+    public AutocompleteCustomArrayAdapter myAdapter;
+    ArrayList<Address> direccs;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_evento);
+
+        try{
+
+            // instantiate database handler
+            direccs = new ArrayList<>();
+
+            // autocompletetextview is in activity_main.xml
+            myAutoComplete = (CustomAutoCompleteView) findViewById(R.id.myautocomplete);
+
+            myAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+
+                    RelativeLayout rl = (RelativeLayout) arg1;
+                    TextView tv = (TextView) rl.getChildAt(0);
+                    myAutoComplete.setText(tv.getText().toString());
+
+                }
+
+            });
+
+            // add the listener so it will tries to suggest while the user types
+            myAutoComplete.addTextChangedListener(new CustomAutoCompleteTextChangedListener(this));
+
+            // ObjectItemData has no value at first
+            ArrayList<Address> ObjectItemData = new ArrayList<>();
+
+            // set the custom ArrayAdapter
+            myAdapter = new AutocompleteCustomArrayAdapter(this, R.layout.list_view_row, ObjectItemData);
+            myAutoComplete.setAdapter(myAdapter);
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         nombreET = (EditText) findViewById(R.id.nombre);
-        lugarET = (EditText) findViewById(R.id.lugar);
         descripcionET = (EditText) findViewById(R.id.descripcion);
         fechaDT = (DatePicker) findViewById(R.id.datePicker);
         eventos = new ArrayList<>();
@@ -66,7 +115,7 @@ public class AgregarEvento extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
         }
         String nombre = nombreET.getText().toString();
-        String lugar = lugarET.getText().toString();
+        String lugar = myAutoComplete.getText().toString();
         String descripcion = descripcionET.getText().toString();
         int año  = fechaDT.getYear();
         int mes = fechaDT.getMonth();

@@ -28,14 +28,12 @@
                 android:textColorHint="#FF6D00"
                 android:hint="Nombre" />
 
-            <EditText
-                android:id="@+id/lugar"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
+            <CustomAutoCompleteView
+                android:id="@+id/myautocomplete"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FF6D00"
-                android:textColorHint="#FF6D00"
-                android:hint="Lugar" />
+                android:completionThreshold="1" >
+            </CustomAutoCompleteView>
 
             <EditText
                 android:id="@+id/descripcion"
