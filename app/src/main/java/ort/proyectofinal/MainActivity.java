@@ -1,10 +1,12 @@
 package ort.proyectofinal;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -45,6 +47,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_main);
+
         try {
             PackageInfo info = getPackageManager().getPackageInfo("com.eatapp", PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
@@ -57,11 +60,6 @@ public class MainActivity extends FragmentActivity {
         } catch (NoSuchAlgorithmException e) {
 
         }
-        if(AccessToken.getCurrentAccessToken() != null){
-            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-            startActivity(intent);
-            System.out.println("Success");
-        }
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
@@ -73,9 +71,7 @@ public class MainActivity extends FragmentActivity {
                     public void onSuccess(LoginResult loginResult) {
                         accessToken = loginResult.getAccessToken();
                         authentication(accessToken);
-                        Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-
-                        startActivity(intent);
+                        SavePreferences("log","yes");
                         System.out.println("Success");
                     }
 
@@ -89,22 +85,12 @@ public class MainActivity extends FragmentActivity {
                         // App code
                     }
                 });
-        if(AccessToken.getCurrentAccessToken() != null){
-            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-            startActivity(intent);
-            System.out.println("Success");
-        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        if(AccessToken.getCurrentAccessToken() != null){
-            Intent intent = new Intent(MainActivity.this, ListarEventos.class);
-            startActivity(intent);
-            System.out.println("Success");
-        }
     }
 
     public void authentication(AccessToken accessToken){
@@ -135,6 +121,16 @@ public class MainActivity extends FragmentActivity {
             Log.d("Error", e.getMessage());
         }
     }
+
+    private void SavePreferences(String key, String value){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+        Intent intent = new Intent(MainActivity.this, ListEventos.class);
+        startActivity(intent);
+    }
+
 }
 
 

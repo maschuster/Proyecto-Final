@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import ort.proyectofinal.Clases.AutocompleteCustomArrayAdapter;
 import ort.proyectofinal.Clases.CustomAutoCompleteTextChangedListener;
@@ -140,7 +141,7 @@ public class AgregarEvento extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AgregarEvento.this, ListarEventos.class);
+                Intent intent = new Intent(AgregarEvento.this, ListEventos.class);
                 startActivity(intent);
             }
         });
@@ -153,7 +154,6 @@ public class AgregarEvento extends AppCompatActivity {
         final View dialogView = inflater.inflate(R.layout.definir_fecha, null);
         dialogBuilder.setView(dialogView);
 
-        dialogBuilder.setTitle("Definir Fecha");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 final DatePicker fechaDP = (DatePicker) dialogView.findViewById(R.id.datePicker);
@@ -205,8 +205,6 @@ public class AgregarEvento extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.definir_hora, null);
         dialogBuilder.setView(dialogView);
-
-        dialogBuilder.setTitle("Definir Hora");
         dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 final TimePicker horaTP = (TimePicker) dialogView.findViewById(R.id.timePicker);
@@ -263,7 +261,7 @@ public class AgregarEvento extends AppCompatActivity {
 
                 Response response = client.newCall(request).execute();
                 Log.d("Response", response.body().string());
-                Intent intent = new Intent(this, ListarEventos.class);
+                Intent intent = new Intent(this, ListEventos.class);
                 startActivity(intent);
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());

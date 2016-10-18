@@ -80,31 +80,11 @@ public class FriendAdapter extends BaseAdapter {
             }
         });
 
-        profilepic(f);
         name.setText(String.valueOf(f.getNombre()));
-
+        Picasso.with(context).load("https://graph.facebook.com/"+f.getIdFacebook()+"/picture?type=large").transform(new CircleTransform()).into(button);
 
         return view;
     }
 
-    void profilepic(Usuario f){
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/" + f.getIdFacebook() + "/picture",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                        try {
-                            JSONObject data = response.getJSONObject();
-                            String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
-                                Picasso.with(context).load(profilePicUrl).transform(new CircleTransform()).into(button);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        ).executeAsync();
-    }
 
 }
