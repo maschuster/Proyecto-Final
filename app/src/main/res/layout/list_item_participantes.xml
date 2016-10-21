@@ -1,26 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="5dp"
         android:id="@+id/image_participante"
         android:scaleType="centerCrop"/>
 
-    <TextView
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="5dp"
-        android:id="@+id/nombre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/nombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"/>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                android:weightSum="25">
+
+                <TextView
+                    android:layout_weight="4"
+                    android:textSize="12dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Gastó"
+                    android:textColor="#000000"/>
+
+                <TextView
+                    android:textSize="12dp"
+                    android:layout_weight="8"
+                    android:layout_width="0dp"
+                    android:id="@+id/gasto"
+                    android:layout_height="wrap_content"
+                    android:textColor="#0101DF"/>
+
+                <TextView
+                    android:layout_weight="4"
+                    android:textSize="12dp"
+                    android:layout_width="0dp"
+                    android:id="@+id/debeoledeben"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"/>
+
+                <TextView
+                    android:id="@+id/debeoledebenvalue"
+                    android:textSize="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

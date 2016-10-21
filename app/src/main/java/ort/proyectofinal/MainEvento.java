@@ -54,7 +54,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     TextView TVdescripcion, TVfecha, TVlugar;
     private FABToolbarLayout layout;
     private View salirfab, agregarobjetofab, three, four;
-    private ListView list, listparticipantes, listvotaciones, listgastos;
+    private ListView list, listparticipantes, listvotaciones;
     private View fab;
     ImageButton imgevento;
     ArrayList<Objeto> objetos;
@@ -64,6 +64,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     AccessToken accessToken;
     FriendAdapter adapter;
     MainEvento mEvento;
+    ParticipanteAdapter participanteAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +83,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVdescripcion.setText(e.getDescripcion());
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         listvotaciones = (ListView) findViewById(R.id.listvotaciones);
-        listgastos = (ListView) findViewById(R.id.listgastos);
         toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         String fecha = e.getFecha().substring(0, 10);
@@ -319,10 +319,10 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             super.onPostExecute(objetosResult);
             if (!objetosResult.isEmpty()) {
                 objetos = objetosResult;
-                ObjetoAdapter adapter = new ObjetoAdapter(mEvento , objetosResult);
-                list.setAdapter(adapter);
-
-                ActualizarGastos();
+                ObjetoAdapter objetoAdapter = new ObjetoAdapter(mEvento , objetosResult);
+                list.setAdapter(objetoAdapter);
+                participanteAdapter.setItem(objetos);
+                participanteAdapter.notifyDataSetChanged();
             }
         }
 
@@ -502,8 +502,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             super.onPostExecute(participantesResult);
             if (!participantesResult.isEmpty()) {
                 participantes = participantesResult;
-                ParticipanteAdapter adapter = new ParticipanteAdapter(mEvento, participantesResult);
-                listparticipantes.setAdapter(adapter);               //LISTPARTICIPANTES
+                participanteAdapter = new ParticipanteAdapter(mEvento, participantesResult, objetos);
+                listparticipantes.setAdapter(participanteAdapter);               //LISTPARTICIPANTES
             }
         }
 
@@ -545,10 +545,5 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     }
     public void ActualizarVotacionesTask(){
         new VotacionesTask().execute(url);
-    }
-
-    public void ActualizarGastos(){
-        GastosAdapter adapterg = new GastosAdapter(mEvento,participantes,objetos);
-        listgastos.setAdapter(adapterg);
     }
 }
