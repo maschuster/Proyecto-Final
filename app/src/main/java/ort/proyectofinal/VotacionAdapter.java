@@ -38,6 +38,7 @@ public class VotacionAdapter  extends BaseAdapter {
     Context context;
     MainEvento mEvento;
     AccessToken accessToken;
+    ImageButton positivoIB,negativoIB;
 
     public VotacionAdapter(MainEvento mEvento, ArrayList<Votacion> votaciones) {
         this.context = mEvento.getApplicationContext();
@@ -73,8 +74,8 @@ public class VotacionAdapter  extends BaseAdapter {
         TextView preguntaTV = (TextView)view.findViewById(R.id.pregunta);
         TextView negativoTV = (TextView)view.findViewById(R.id.negativo);
         TextView positivoTV = (TextView)view.findViewById(R.id.positivo);
-        ImageButton positivoIB = (ImageButton) view.findViewById(R.id.positivoimg);
-        ImageButton negativoIB = (ImageButton) view.findViewById(R.id.negativoimg);
+        positivoIB = (ImageButton) view.findViewById(R.id.positivoimg);
+        negativoIB = (ImageButton) view.findViewById(R.id.negativoimg);
         Votacion v = votaciones.get(position);
         preguntaTV.setText(String.valueOf(v.getPregunta()));
         negativoTV.setText(String.valueOf(v.getNegativos()));
@@ -98,6 +99,8 @@ public class VotacionAdapter  extends BaseAdapter {
         negativoIB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                negativoIB.setEnabled(false);
+                positivoIB.setEnabled(false);
                 Votar(2,position);
             }
         });
@@ -105,6 +108,8 @@ public class VotacionAdapter  extends BaseAdapter {
         positivoIB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                negativoIB.setEnabled(false);
+                positivoIB.setEnabled(false);
                 Votar(1,position);
             }
         });

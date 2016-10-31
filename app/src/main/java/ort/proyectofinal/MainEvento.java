@@ -163,7 +163,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
-                if(nombre.equals("") && precio <0){
+                if(nombre.equals("") || precio <0 || String.valueOf(precio).equals("")){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
                 }else {
                     if (spinner.getSelectedItem().toString() == "Sin Asignar") {
@@ -310,6 +310,37 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         }
         new ObjetosTask().execute(url);
     }
+
+    public void AgregarParticipante(Usuario f){
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        accessToken = AccessToken.getCurrentAccessToken();
+        try {
+            OkHttpClient client = new OkHttpClient();
+            JSONObject json = new JSONObject();
+            json.put("idEvento", e.getIdEvento());
+            json.put("idFacebook", f.getIdFacebook());
+            json.put("nombre", f.getNombre());
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            Request request = new Request.Builder()
+                    .addHeader("X-USER-ID",accessToken.getUserId())
+                    .url(url + "agregarparticipante.php")
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            Log.d("Response", response.body().string());
+        } catch (IOException | JSONException e) {
+            Log.d("Error", e.getMessage());
+        }
+        new ParticipantesTask().execute(url);
+    }
+
+
 
     public class ObjetosTask extends AsyncTask<String, Void, ArrayList<Objeto>> {
         private OkHttpClient client = new OkHttpClient();
@@ -465,35 +496,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
     }
 
-    public void AgregarParticipante(Usuario f){
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-        accessToken = AccessToken.getCurrentAccessToken();
-        try {
-            OkHttpClient client = new OkHttpClient();
-            JSONObject json = new JSONObject();
-            json.put("idEvento", e.getIdEvento());
-            json.put("idFacebook", f.getIdFacebook());
-            json.put("nombre", f.getNombre());
-
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
-
-            Request request = new Request.Builder()
-                    .addHeader("X-USER-ID",accessToken.getUserId())
-                    .url(url + "agregarparticipante.php")
-                    .post(body)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            Log.d("Response", response.body().string());
-        } catch (IOException | JSONException e) {
-            Log.d("Error", e.getMessage());
-        }
-        new ParticipantesTask().execute(url);
-    }
-
     private class ParticipantesTask extends AsyncTask<String, Void, ArrayList<Participante>> {
         private OkHttpClient client = new OkHttpClient();
 
@@ -543,6 +545,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     public void ActualizarObjetoTask(){
         new ObjetosTask().execute(url);
     }
+
     public void ActualizarVotacionesTask(){
         new VotacionesTask().execute(url);
     }

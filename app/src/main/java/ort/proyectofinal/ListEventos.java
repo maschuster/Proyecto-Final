@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ public class ListEventos extends AppCompatActivity {
     ListView listVW;
     ArrayList<Evento> eventos;
     AccessToken accessToken;
+    ProgressBar progressBar;
     String nombre = "";
     public static String url = "http://eventospf2016.azurewebsites.net/";
 
@@ -156,6 +158,10 @@ public class ListEventos extends AppCompatActivity {
     private class EventosTask extends AsyncTask<String, Void, ArrayList<Evento>> {
         private OkHttpClient client = new OkHttpClient();
 
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected void onPostExecute(ArrayList<Evento> eventosResult) {
             super.onPostExecute(eventosResult);
@@ -163,6 +169,7 @@ public class ListEventos extends AppCompatActivity {
                 eventos = eventosResult;
                 EventosAdapter adapter = new EventosAdapter(getApplicationContext(),eventosResult);
                 listVW.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);
             }
         }
 

@@ -1,10 +1,12 @@
 package ort.proyectofinal;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
@@ -53,6 +55,8 @@ public class AgregarEvento extends AppCompatActivity {
     ArrayList<Evento> eventos;
     AccessToken accessToken;
     TextView horaTV, fechaTV;
+    String nombre,lugar,descripcion,fecha,hora;
+    String url ="http://eventospf2016.azurewebsites.net/agregarevento.php";
 
     public CustomAutoCompleteView myAutoComplete;
     public AutocompleteCustomArrayAdapter myAdapter;
@@ -134,7 +138,17 @@ public class AgregarEvento extends AppCompatActivity {
         tvSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AgregarEvento();
+                nombre = nombreET.getText().toString();
+                lugar = myAutoComplete.getText().toString();
+                descripcion = descripcionET.getText().toString();
+                fecha = fechaTV.getText().toString();
+                hora = horaTV.getText().toString();
+                if (nombre.length() == 0 | descripcion.length() == 0 | lugar.length() == 0)
+                {
+                    Toast.makeText(AgregarEvento.this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
+                }else{
+                    new CrearEvento();
+                }
             }
         });
         ImageButton back = (ImageButton) findViewById(R.id.toolbar_back);
@@ -179,7 +193,7 @@ public class AgregarEvento extends AppCompatActivity {
                     String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
                     Date date2 = formatter.parse(date);
 
-                    if (date1.compareTo(date2)>0)
+                    if (date1.compareTo(date2)>=0)
                     {
                         String fecha = String.valueOf(año) +"-" + String.valueOf(mes) + "-" + String.valueOf(dia);
                         fechaTV.setText(fecha);
@@ -227,15 +241,16 @@ public class AgregarEvento extends AppCompatActivity {
         b.show();
     }
 
-    public void AgregarEvento () {
+    /*public void AgregarEvento () {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        String nombre = nombreET.getText().toString();
-        String lugar = myAutoComplete.getText().toString();
-        String descripcion = descripcionET.getText().toString();
-        String fecha = fechaTV.getText().toString();
+        nombre = nombreET.getText().toString();
+        lugar = myAutoComplete.getText().toString();
+        descripcion = descripcionET.getText().toString();
+        fecha = fechaTV.getText().toString();
+        hora = horaTV.getText().toString();
         if (nombre.length() == 0 | descripcion.length() == 0 | lugar.length() == 0)
         {
             Toast.makeText(AgregarEvento.this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
@@ -246,7 +261,8 @@ public class AgregarEvento extends AppCompatActivity {
                 JSONObject json = new JSONObject();
                 json.put("idAdmin", String.valueOf(accessToken.getUserId()));
                 json.put("nombre", nombre);
-                json.put("fecha", fecha);
+                json.put("fecha", fecha+":00");
+                json.put("hora", hora);
                 json.put("lugar", lugar);
                 json.put("descripcion", descripcion);
                 json.put("foto", "foto.jpg");
@@ -267,5 +283,72 @@ public class AgregarEvento extends AppCompatActivity {
                 Log.d("Error", e.getMessage());
             }
         }
+    }*/
+
+
+
+
+    private class CrearEvento extends AsyncTask<String, Void, String> {
+        private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPostExecute(String resultado) {
+            super.onPostExecute(resultado);
+            Toast registro;
+            if (!resultado.isEmpty()) {
+                if (resultado.equals("No se agrego correctamente")) {
+                    registro = Toast.makeText(AgregarEvento.this, "Hubo un error, intente en un instante", Toast.LENGTH_SHORT);
+                } else {
+                    registro = Toast.makeText(AgregarEvento.this, "Evento Creado", Toast.LENGTH_SHORT);
+                }
+                registro.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                RequestBody body = generarJSON();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+
+                Response response = client.newCall(request).execute();
+                return parsearRespuesta(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return "";
+            }
+        }
+
+        RequestBody generarJSON() throws JSONException {
+            JSONObject json = new JSONObject();
+            json.put("idAdmin", String.valueOf(accessToken.getUserId()));
+            json.put("nombre", nombre);
+            json.put("fecha", fecha+":00");
+            json.put("hora", hora);
+            json.put("lugar", lugar);
+            json.put("descripcion", descripcion);
+            json.put("foto", "foto.jpg");
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            return body;
+        }
+
+        String parsearRespuesta(String JSONstr) throws JSONException {
+            org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
+            if (respuesta.has("id")) {
+                String id = respuesta.getString("id");
+                return id;
+            } else {
+                String error = respuesta.getString("Error");
+                return error;
+            }
+        }
     }
+
 }
+
