@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -69,6 +70,7 @@ public class ListEventos extends AppCompatActivity {
         LoadPreferences();
         setContentView(R.layout.activity_list_eventos);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         inicializarToolbar();
         accessToken = AccessToken.getCurrentAccessToken();
         TVnombre = (TextView) findViewById(R.id.nombre);
@@ -82,7 +84,7 @@ public class ListEventos extends AppCompatActivity {
         getName();
         Picasso.with(getApplicationContext()).load("https://graph.facebook.com/"+accessToken.getUserId()+"/picture?type=large").transform(new CircleTransform()).into(profile_pic);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        com.getbase.floatingactionbutton.FloatingActionButton fab = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

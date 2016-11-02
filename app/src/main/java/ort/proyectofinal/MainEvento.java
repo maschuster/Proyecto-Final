@@ -1,6 +1,7 @@
 package ort.proyectofinal;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -72,7 +73,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         accessToken = AccessToken.getCurrentAccessToken();
         setContentView(R.layout.activity_main_evento);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         TVdescripcion = (TextView) findViewById(R.id.descripcion);
         TVfecha = (TextView) findViewById(R.id.fecha);
         TVlugar = (TextView) findViewById(R.id.lugar);
@@ -83,7 +83,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVdescripcion.setText(e.getDescripcion());
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         listvotaciones = (ListView) findViewById(R.id.listvotaciones);
-        toolbar.setTitle(e.getNombre());
         setSupportActionBar(toolbar);
         String fecha = e.getFecha().substring(0, 10);
         TVfecha.setText(fecha);
@@ -114,10 +113,29 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             }
         });
 
+        setupToolbar();
         new ParticipantesTask().execute(url);
         new ObjetosTask().execute(url);
         new VotacionesTask().execute();
         facebookfriends();
+    }
+
+    private void setupToolbar() {
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        // Hide the title
+        getSupportActionBar().setTitle(null);
+        // Set onClickListener to customView
+        TextView tvTitle = (TextView) findViewById(R.id.toolbar_title);
+        tvTitle.setText(e.getNombre());
+        ImageButton back = (ImageButton) findViewById(R.id.toolbar_back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainEvento.this, ListEventos.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

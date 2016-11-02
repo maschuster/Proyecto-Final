@@ -37,7 +37,8 @@ import ort.proyectofinal.Clases.Participante;
 /**
  * Created by Schuster on 29/05/2016.
  */
-public class ObjetoAdapter extends BaseAdapter {
+public class
+ObjetoAdapter extends BaseAdapter {
 
     ArrayList<Objeto> objetos;
     Context context;

@@ -12,7 +12,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         tools:context="ort.proyectofinal.ListEventos">
 
@@ -29,7 +29,7 @@
 
         <include layout="@layout/content_list_eventos" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_margin="28dp"
             app:fabSize="normal"
             app:borderWidth="0dp"
-            android:src="@drawable/ic_add_black_24dp" />
+            android:src="@drawable/ic_add_black_24dp"  />
 
     </android.support.design.widget.CoordinatorLayout>
 

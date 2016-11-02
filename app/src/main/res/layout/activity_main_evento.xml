@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -19,17 +20,27 @@
             android:background="#FF6D00"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-        <ImageButton
-            android:id="@+id/toolbar_back"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-            android:background="?attr/selectableItemBackground"
-            android:src="@drawable/ic_arrow_back_black_24dp"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"/>
+            <ImageButton
+                android:id="@+id/toolbar_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_arrow_back_black_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text=""
+                android:textAllCaps="true" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -55,13 +66,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.FloatingActionButton
+            <ImageView
                 android:id="@id/fabtoolbar_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:fabSize="normal"
-                app:borderWidth="0dp"
-                android:src="@drawable/ic_add_black_24dp"/>
+                android:src="@drawable/ic_add_black_24dp" />
 
         </RelativeLayout>
 
