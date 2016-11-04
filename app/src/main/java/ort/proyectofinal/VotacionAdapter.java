@@ -1,6 +1,7 @@
 package ort.proyectofinal;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.squareup.okhttp.MediaType;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ort.proyectofinal.Clases.CircleTransform;
+import ort.proyectofinal.Clases.Objeto;
 import ort.proyectofinal.Clases.Participante;
 import ort.proyectofinal.Clases.Votacion;
 
@@ -39,6 +42,11 @@ public class VotacionAdapter  extends BaseAdapter {
     MainEvento mEvento;
     AccessToken accessToken;
     ImageButton positivoIB,negativoIB;
+    int posicion;
+    String idParticipante = "0";
+    int voto;
+
+    String url = "http://eventospf2016.azurewebsites.net/votar.php";
 
     public VotacionAdapter(MainEvento mEvento, ArrayList<Votacion> votaciones) {
         this.context = mEvento.getApplicationContext();
@@ -76,7 +84,7 @@ public class VotacionAdapter  extends BaseAdapter {
         TextView positivoTV = (TextView)view.findViewById(R.id.positivo);
         positivoIB = (ImageButton) view.findViewById(R.id.positivoimg);
         negativoIB = (ImageButton) view.findViewById(R.id.negativoimg);
-        Votacion v = votaciones.get(position);
+        final Votacion v = votaciones.get(position);
         preguntaTV.setText(String.valueOf(v.getPregunta()));
         negativoTV.setText(String.valueOf(v.getNegativos()));
         positivoTV.setText(String.valueOf(v.getAfirmativos()));
@@ -98,19 +106,39 @@ public class VotacionAdapter  extends BaseAdapter {
 
         negativoIB.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view1) {
                 negativoIB.setEnabled(false);
                 positivoIB.setEnabled(false);
-                Votar(2,position);
+                if(v.getVoto() == 0){
+                    voto = 2;
+                    posicion = position;
+                    for (Participante p: (mEvento).participantes) {
+                        if(accessToken.getUserId().equals(p.getIdFacebook())){
+                            idParticipante = String.valueOf(p.getIdParticipante());
+                        }
+                    }
+                    new VotarTask().execute();
+                    //Votar(2,position);
+                }
             }
         });
 
         positivoIB.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view1) {
                 negativoIB.setEnabled(false);
                 positivoIB.setEnabled(false);
-                Votar(1,position);
+                if(v.getVoto() == 0){
+                    voto = 1;
+                    posicion = position;
+                    for (Participante p: (mEvento).participantes) {
+                        if(accessToken.getUserId().equals(p.getIdFacebook())){
+                            idParticipante = String.valueOf(p.getIdParticipante());
+                        }
+                    }
+                    new VotarTask().execute();
+                    //Votar(1,position);
+                }
             }
         });
 
@@ -151,5 +179,64 @@ public class VotacionAdapter  extends BaseAdapter {
             Log.d("Error", e.getMessage());
         }
         mEvento.ActualizarVotacionesTask();
+    }
+
+
+
+    private class VotarTask extends AsyncTask<String, Void, String> {
+        private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPostExecute(String resultado) {
+            super.onPostExecute(resultado);
+            Toast registro;
+            if (!resultado.isEmpty()) {
+                if (resultado.equals("NO")) {
+                    registro = Toast.makeText(mEvento.getApplicationContext(), "Hubo un error, intente en un instante", Toast.LENGTH_SHORT);
+                    registro.show();
+                }
+                mEvento.ActualizarVotacionesTask();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                RequestBody body = generarJSON();
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                return parsearRespuesta(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return "";
+            }
+        }
+
+        RequestBody generarJSON() throws JSONException {
+            JSONObject json = new JSONObject();
+            json.put("idParticipante", idParticipante);
+            json.put("idPregunta", votaciones.get(posicion).getIdPregunta());
+            json.put("voto", voto);
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            return body;
+        }
+
+        String parsearRespuesta(String JSONstr) throws JSONException {
+            org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
+            if (respuesta.has("Mensaje")) {
+                String msj = respuesta.getString("Mensaje");
+                return msj;
+            } else {
+                String error = respuesta.getString("Error");
+                return error;
+            }
+        }
     }
 }

@@ -50,10 +50,12 @@ public class EventosAdapter extends BaseAdapter {
         }
 
         TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
+        TextView fechaTV = (TextView)view.findViewById(R.id.fechaeventolist);
 
         Evento e = eventos.get(position);
 
         nombreTV.setText(String.valueOf(e.getNombre()));
+        fechaTV.setText(String.valueOf(e.getFecha()));
         return view;
     }
 }

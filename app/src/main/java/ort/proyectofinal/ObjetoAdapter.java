@@ -2,6 +2,8 @@ package ort.proyectofinal;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -44,6 +46,11 @@ ObjetoAdapter extends BaseAdapter {
     Context context;
     MainEvento mEvento;
     Spinner spinner;
+    int tipomod;
+    int posicion;
+    int idParticipanteoPrecio;
+
+    public String url = "http://eventospf2016.azurewebsites.net/actualizarobjeto.php";
 
     public ObjetoAdapter(MainEvento mEvento, ArrayList<Objeto> objetos) {
         this.context = mEvento.getApplicationContext();
@@ -75,8 +82,8 @@ ObjetoAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.list_item_objetos, viewGroup, false);
         }
 
-        TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
-        TextView precioTV = (TextView)view.findViewById(R.id.precio);
+        final TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
+        final TextView precioTV = (TextView)view.findViewById(R.id.precio);
         TextView participanteTV = (TextView)view.findViewById(R.id.participante);
         CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkboxobjeto);
 
@@ -85,7 +92,11 @@ ObjetoAdapter extends BaseAdapter {
             public void onClick(View v) {
                 CheckBox cb = (CheckBox) v;
                 objetos.get(position).setChecked(cb.isChecked());
-                ModificarObjetoSQL(position,0,objetos.get(position).getIdParticipante());
+                posicion = position;
+                tipomod = 0;
+                idParticipanteoPrecio = objetos.get(position).getIdParticipante();
+                //ModificarObjetoSQL(position,0,objetos.get(position).getIdParticipante());
+                new ModificarObjeto().execute(url);
             }
         });
         Objeto o = objetos.get(position);
@@ -133,12 +144,20 @@ ObjetoAdapter extends BaseAdapter {
                 dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if(spinner.getSelectedItem().toString() == "Sin Asignar"){
-                            ModificarObjetoSQL(position,1,0);
+                            posicion = position;
+                            tipomod = 1;
+                            idParticipanteoPrecio = 0;
+                            new ModificarObjeto().execute(url);
+                            //ModificarObjetoSQL(position,1,0);
                         }else{
                             final int idParticipantePosition = spinner.getSelectedItemPosition();
                             Participante p = mEvento.participantes.get(idParticipantePosition);
                             final int idParticipante = p.getIdParticipante();
-                            ModificarObjetoSQL(position,1,idParticipante);
+                            posicion = position;
+                            tipomod = 1;
+                            idParticipanteoPrecio = idParticipante;
+                            new ModificarObjeto().execute(url);
+                            //ModificarObjetoSQL(position,1,idParticipante);
                         }
                     }
                 });
@@ -163,11 +182,19 @@ ObjetoAdapter extends BaseAdapter {
                 dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         EditText precioET = (EditText) dialogView.findViewById(R.id.precioET);
-                        int precio = Integer.parseInt(precioET.getText().toString());
-                        if(String.valueOf(precio).equals("")){
+                        if(precioET.getText().toString().length() >0){
+                            int precio = Integer.parseInt(precioET.getText().toString());
+                            if(precio >0){
+                                posicion = position;
+                                tipomod = 2;
+                                idParticipanteoPrecio = precio;
+                                //ModificarObjetoSQL(position, 2, precio);
+                                new ModificarObjeto().execute(url);
+                            }else{
+                                Toast.makeText(mEvento, "Ingrese un precio válido", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
                             Toast.makeText(mEvento, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
-                        }else {
-                            ModificarObjetoSQL(position, 2, precio);
                         }
                     }
                 });
@@ -182,6 +209,7 @@ ObjetoAdapter extends BaseAdapter {
 
         return view;
     }
+
 
     public void ModificarObjetoSQL (int position, int tipomod, int idParticipanteoPrecio) {
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -223,4 +251,78 @@ ObjetoAdapter extends BaseAdapter {
             mEvento.ActualizarObjetoTask();
         }
     }
+
+
+
+    private class ModificarObjeto extends AsyncTask<String, Void, String> {
+        private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPostExecute(String resultado) {
+            super.onPostExecute(resultado);
+            Toast registro;
+            mEvento.ActualizarObjetoTask();
+            if (!resultado.isEmpty()) {
+                if (resultado.equals("NO")) {
+                    registro = Toast.makeText(mEvento.getApplicationContext(), "Hubo un error, intente en un instante", Toast.LENGTH_SHORT);
+                    registro.show();
+                }
+                mEvento.ActualizarObjetoTask();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                RequestBody body = generarJSON();
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                return parsearRespuesta(response.body().string());
+            } catch (IOException | JSONException e) {
+                Log.d("Error", e.getMessage());
+                return "";
+            }
+        }
+
+        RequestBody generarJSON() throws JSONException {
+            JSONObject json = new JSONObject();
+            Objeto o = objetos.get(posicion);
+            json.put("tipomod", tipomod);
+            json.put("idObjeto", o.getIdObjeto());
+
+            if(tipomod == 0){
+                if (o.isChecked()) {
+                    json.put("estado", "1");
+                }else{
+                    json.put("estado", "0");
+                }
+            }if(tipomod==1){
+                json.put("idParticipante", idParticipanteoPrecio);
+            }
+            if (tipomod ==2){
+                json.put("precio", idParticipanteoPrecio);
+            }
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+            return body;
+        }
+
+        String parsearRespuesta(String JSONstr) throws JSONException {
+            org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
+            if (respuesta.has("Mensaje")) {
+                String msj = respuesta.getString("Mensaje");
+                return msj;
+            } else {
+                String error = respuesta.getString("Error");
+                return error;
+            }
+        }
+    }
+
 }

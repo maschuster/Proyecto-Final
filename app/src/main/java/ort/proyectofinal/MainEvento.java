@@ -189,17 +189,21 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
                 final String nombre = edt.getText().toString();
-                final int precio = Integer.parseInt(edt2.getText().toString());
-                if(nombre.equals("") || precio <0 || edt2.getText().toString().length() == 0){
+                if(nombre.equals("") || edt2.getText().toString().length() == 0){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
                 }else {
-                    if (spinner.getSelectedItem().toString() == "Sin Asignar") {
-                        AgregarObjetoSQL(nombre, precio, 0);
-                    } else {
-                        final int idParticipantePosition = spinner.getSelectedItemPosition();
-                        Participante p = participantes.get(idParticipantePosition);
-                        final int idParticipante = p.getIdParticipante();
-                        AgregarObjetoSQL(nombre, precio, idParticipante);
+                    final int precio = Integer.parseInt(edt2.getText().toString());
+                    if(precio >0){
+                        if (spinner.getSelectedItem().toString() == "Sin Asignar") {
+                            AgregarObjetoSQL(nombre, precio, 0);
+                        } else {
+                            final int idParticipantePosition = spinner.getSelectedItemPosition();
+                            Participante p = participantes.get(idParticipantePosition);
+                            final int idParticipante = p.getIdParticipante();
+                            AgregarObjetoSQL(nombre, precio, idParticipante);
+                        }
+                    }else{
+                        Toast.makeText(MainEvento.this, "Precio Inválido", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -504,7 +508,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                             }
 
                             recorrerFriends();
-                            //adapter.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 }

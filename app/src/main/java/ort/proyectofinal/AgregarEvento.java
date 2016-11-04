@@ -286,16 +286,16 @@ public class AgregarEvento extends AppCompatActivity {
             super.onPostExecute(resultado);
             Intent intent = new Intent(AgregarEvento.this, ListEventos.class);
             startActivity(intent);
-            /*Toast registro;
+            Toast registro;
             if (!resultado.isEmpty()) {
-                if (resultado.equals("Error")) {
+                if (resultado.equals("NO")) {
                     registro = Toast.makeText(AgregarEvento.this, "Hubo un error, intente en un instante", Toast.LENGTH_SHORT);
                 } else {
                     registro = Toast.makeText(AgregarEvento.this, "Evento Creado", Toast.LENGTH_SHORT);
                     startActivity(intent);
                 }
                 registro.show();
-            }*/
+            }
         }
 
         @Override
@@ -309,8 +309,7 @@ public class AgregarEvento extends AppCompatActivity {
                     .build();
 
                 Response response = client.newCall(request).execute();
-                return "";
-                //return parsearRespuesta(response.body().string());
+                return parsearRespuesta(response.body().string());
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
                 return "";
@@ -333,7 +332,7 @@ public class AgregarEvento extends AppCompatActivity {
 
         String parsearRespuesta(String JSONstr) throws JSONException {
             org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
-            if (respuesta.has("res")) {
+            if (respuesta.has("Mensaje")) {
                 String msj = respuesta.getString("Mensaje");
                 return msj;
             } else {

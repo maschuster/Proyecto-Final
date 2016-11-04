@@ -105,6 +105,10 @@ public class ParticipanteAdapter extends BaseAdapter {
             debeoledebenvalue.setText(String.valueOf(debeoledeben));
             debeoledebenvalue.setTextColor(Color.GREEN);
         }
+        if(gastos==totaldividido){
+            debeoledebenvalue.setText(String.valueOf(debeoledeben));
+            debeoledebenvalue.setTextColor(Color.BLUE);
+        }
 
 
 

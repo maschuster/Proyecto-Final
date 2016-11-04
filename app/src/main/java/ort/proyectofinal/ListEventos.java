@@ -84,7 +84,7 @@ public class ListEventos extends AppCompatActivity {
         getName();
         Picasso.with(getApplicationContext()).load("https://graph.facebook.com/"+accessToken.getUserId()+"/picture?type=large").transform(new CircleTransform()).into(profile_pic);
 
-        com.getbase.floatingactionbutton.FloatingActionButton fab = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,7 +146,6 @@ public class ListEventos extends AppCompatActivity {
     }
 
 
-    // Abre el drawer al clickear el burger
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
