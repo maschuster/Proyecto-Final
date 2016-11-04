@@ -143,11 +143,11 @@ public class AgregarEvento extends AppCompatActivity {
                 descripcion = descripcionET.getText().toString();
                 fecha = fechaTV.getText().toString();
                 hora = horaTV.getText().toString();
-                if (nombre.length() == 0 | descripcion.length() == 0 | lugar.length() == 0)
+                if (nombre.length() > 0 | descripcion.length() > 0 | lugar.length() > 0)
                 {
-                    Toast.makeText(AgregarEvento.this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
+                    AgregarEvento();
                 }else{
-                    new CrearEvento();
+                    Toast.makeText(AgregarEvento.this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -241,28 +241,18 @@ public class AgregarEvento extends AppCompatActivity {
         b.show();
     }
 
-    /*public void AgregarEvento () {
+    public void AgregarEvento () {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        nombre = nombreET.getText().toString();
-        lugar = myAutoComplete.getText().toString();
-        descripcion = descripcionET.getText().toString();
-        fecha = fechaTV.getText().toString();
-        hora = horaTV.getText().toString();
-        if (nombre.length() == 0 | descripcion.length() == 0 | lugar.length() == 0)
-        {
-            Toast.makeText(AgregarEvento.this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
-        }else{
             try {
                 OkHttpClient client = new OkHttpClient();
                 String url ="http://eventospf2016.azurewebsites.net/agregarevento.php";
                 JSONObject json = new JSONObject();
                 json.put("idAdmin", String.valueOf(accessToken.getUserId()));
                 json.put("nombre", nombre);
-                json.put("fecha", fecha+":00");
-                json.put("hora", hora);
+                json.put("fecha", fecha+" "+hora+":00");
                 json.put("lugar", lugar);
                 json.put("descripcion", descripcion);
                 json.put("foto", "foto.jpg");
@@ -283,7 +273,7 @@ public class AgregarEvento extends AppCompatActivity {
                 Log.d("Error", e.getMessage());
             }
         }
-    }*/
+
 
 
 
@@ -294,15 +284,18 @@ public class AgregarEvento extends AppCompatActivity {
         @Override
         protected void onPostExecute(String resultado) {
             super.onPostExecute(resultado);
-            Toast registro;
+            Intent intent = new Intent(AgregarEvento.this, ListEventos.class);
+            startActivity(intent);
+            /*Toast registro;
             if (!resultado.isEmpty()) {
-                if (resultado.equals("No se agrego correctamente")) {
+                if (resultado.equals("Error")) {
                     registro = Toast.makeText(AgregarEvento.this, "Hubo un error, intente en un instante", Toast.LENGTH_SHORT);
                 } else {
                     registro = Toast.makeText(AgregarEvento.this, "Evento Creado", Toast.LENGTH_SHORT);
+                    startActivity(intent);
                 }
                 registro.show();
-            }
+            }*/
         }
 
         @Override
@@ -316,7 +309,8 @@ public class AgregarEvento extends AppCompatActivity {
                     .build();
 
                 Response response = client.newCall(request).execute();
-                return parsearRespuesta(response.body().string());
+                return "";
+                //return parsearRespuesta(response.body().string());
             } catch (IOException | JSONException e) {
                 Log.d("Error", e.getMessage());
                 return "";
@@ -327,8 +321,7 @@ public class AgregarEvento extends AppCompatActivity {
             JSONObject json = new JSONObject();
             json.put("idAdmin", String.valueOf(accessToken.getUserId()));
             json.put("nombre", nombre);
-            json.put("fecha", fecha+":00");
-            json.put("hora", hora);
+            json.put("fecha", fecha+" "+hora+":00");
             json.put("lugar", lugar);
             json.put("descripcion", descripcion);
             json.put("foto", "foto.jpg");
@@ -340,9 +333,9 @@ public class AgregarEvento extends AppCompatActivity {
 
         String parsearRespuesta(String JSONstr) throws JSONException {
             org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
-            if (respuesta.has("id")) {
-                String id = respuesta.getString("id");
-                return id;
+            if (respuesta.has("res")) {
+                String msj = respuesta.getString("Mensaje");
+                return msj;
             } else {
                 String error = respuesta.getString("Error");
                 return error;

@@ -35,17 +35,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:layout_marginTop="5dp"
                             android:textSize="15dp"
+                            android:drawableLeft="@drawable/ic_today_black_24dp"
+                            android:drawablePadding="2dp"
                             android:textColor="#FF6D00"
                             android:id="@+id/fecha"/>
 
@@ -55,19 +52,10 @@
                             android:layout_marginLeft="10dp"
                             android:layout_marginTop="5dp"
                             android:textSize="15dp"
+                            android:drawableLeft="@drawable/ic_place_black_24dp"
+                            android:drawablePadding="2dp"
                             android:textColor="#FF6D00"
                             android:id="@+id/lugar"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#FF6D00"
-                        android:layout_marginTop="5dp"
-                        android:textSize="15dp"
-                        android:layout_marginLeft="10dp"
-                        android:hint="descripcion"
-                        android:id="@+id/descripcion"/>
 
                 </LinearLayout>
 
@@ -83,12 +71,24 @@
         android:layout_gravity="center_horizontal">
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF6D00"
+                android:layout_marginTop="5dp"
+                android:textSize="15dp"
+                android:layout_marginLeft="10dp"
+                android:hint="descripcion"
+                android:id="@+id/descripcion"/>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:textSize="20dp"
+                android:drawableLeft="@drawable/ic_add_shopping_cart_black_24dp"
+                android:drawablePadding="2dp"
                 android:textColor="#000000"
-                android:hint="Compras:"
+                android:text="Compras"
                 android:id="@+id/compras"/>
 
             <ort.proyectofinal.Clases.NonScrollListView
@@ -106,12 +106,14 @@
             android:layout_gravity="center_horizontal">
 
             <TextView
+                android:drawableLeft="@drawable/ic_group_black_24dp"
+                android:drawablePadding="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:textSize="20dp"
                 android:textColor="#000000"
-                android:hint="Invitados:"
+                android:text="Invitados"
                 android:id="@+id/personas"/>
 
             <ort.proyectofinal.Clases.NonScrollListView
@@ -129,12 +131,14 @@
             android:layout_gravity="center_horizontal">
 
             <TextView
+                android:drawableLeft="@drawable/ic_thumbs_up_down_black_24dp"
+                android:drawablePadding="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:textSize="20dp"
                 android:textColor="#000000"
-                android:hint="Decisiones:" />
+                android:text="Votaciones" />
 
             <ort.proyectofinal.Clases.NonScrollListView
                 android:id="@+id/listvotaciones"

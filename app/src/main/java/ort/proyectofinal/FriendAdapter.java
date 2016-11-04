@@ -1,11 +1,13 @@
 package ort.proyectofinal;
 
 import android.content.Context;
+import android.graphics.LightingColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -19,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import ort.proyectofinal.Clases.CircleTransform;
+import ort.proyectofinal.Clases.Participante;
 import ort.proyectofinal.Clases.Usuario;
 
 /**
@@ -70,6 +73,7 @@ public class FriendAdapter extends BaseAdapter {
 
         TextView name = (TextView) view.findViewById(R.id.name);
         button = (ImageButton) view.findViewById(R.id.button);
+        ImageView friendIV = (ImageView) view.findViewById(R.id.friend);
         Usuario f = friends.get(position);
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +85,8 @@ public class FriendAdapter extends BaseAdapter {
         });
 
         name.setText(String.valueOf(f.getNombre()));
-        Picasso.with(context).load("https://graph.facebook.com/"+f.getIdFacebook()+"/picture?type=large").transform(new CircleTransform()).into(button);
+        button.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));;
+        Picasso.with(context).load("https://graph.facebook.com/"+f.getIdFacebook()+"/picture?type=large").transform(new CircleTransform()).into(friendIV);
 
         return view;
     }

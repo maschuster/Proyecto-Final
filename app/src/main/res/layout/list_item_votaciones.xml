@@ -22,6 +22,7 @@
 
 
         <LinearLayout
+            android:layout_marginTop="2dp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
@@ -29,8 +30,8 @@
 
                 <ImageButton
                     android:background="#00000000"
-                    android:layout_width="40dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:id="@+id/positivoimg"
                     android:scaleType="centerCrop"/>
 
@@ -38,13 +39,14 @@
                     android:id="@+id/positivo"
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
-                    android:layout_marginLeft="18dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_width="wrap_content"/>
         </LinearLayout>
 
 
 
         <LinearLayout
+            android:layout_marginTop="2dp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
@@ -52,8 +54,8 @@
 
             <ImageButton
                 android:background="#00000000"
-                android:layout_width="40dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:id="@+id/negativoimg"
                 android:scaleType="centerCrop"/>
 
@@ -61,7 +63,7 @@
                 android:id="@+id/negativo"
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
-                android:layout_marginLeft="18dp"
+                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"/>
 
         </LinearLayout>

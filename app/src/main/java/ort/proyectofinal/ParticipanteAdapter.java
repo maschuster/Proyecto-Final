@@ -65,7 +65,6 @@ public class ParticipanteAdapter extends BaseAdapter {
         TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
         ImageView fotoIV = (ImageView)view.findViewById(R.id.image_participante);
         TextView gastoTV = (TextView)view.findViewById(R.id.gasto);
-        TextView debeoledebenTV = (TextView)view.findViewById(R.id.debeoledeben);
         TextView debeoledebenvalue = (TextView)view.findViewById(R.id.debeoledebenvalue);
         Participante p = participantes.get(position);
         nombreTV.setText(String.valueOf(p.getNombre()));
@@ -99,12 +98,10 @@ public class ParticipanteAdapter extends BaseAdapter {
         debeoledeben = gastos - totaldividido;
         gastoTV.setText(String.valueOf(gastos));
         if(gastos>totaldividido){
-            debeoledebenTV.setText("Debe");
             debeoledebenvalue.setText(String.valueOf(debeoledeben));
             debeoledebenvalue.setTextColor(Color.RED);
         }
         if(gastos<totaldividido){
-            debeoledebenTV.setText("Debe");
             debeoledebenvalue.setText(String.valueOf(debeoledeben));
             debeoledebenvalue.setTextColor(Color.GREEN);
         }

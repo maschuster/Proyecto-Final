@@ -82,18 +82,18 @@ public class VotacionAdapter  extends BaseAdapter {
         positivoTV.setText(String.valueOf(v.getAfirmativos()));
 
         if(v.getVoto() == 1){
-            Picasso.with(context).load(R.drawable.thumbsup).transform(new CircleTransform()).into(positivoIB);
-            Picasso.with(context).load(R.drawable.thumbsdownnormal).transform(new CircleTransform()).into(negativoIB);
+            positivoIB.setImageResource(R.drawable.ic_thumb_up_black_24dp);
+            negativoIB.setImageResource(R.drawable.ic_thumb_down_black_transparent_24dp);
             negativoIB.setEnabled(false);
             positivoIB.setEnabled(false);
         }else if (v.getVoto() == 2){
-            Picasso.with(context).load(R.drawable.thumbsdown).transform(new CircleTransform()).into(negativoIB);
-            Picasso.with(context).load(R.drawable.thumbsupnormal).transform(new CircleTransform()).into(positivoIB);
+            positivoIB.setImageResource(R.drawable.ic_thumb_up_black_transparent_24dp);
+            negativoIB.setImageResource(R.drawable.ic_thumb_down_black_24dp);
             negativoIB.setEnabled(false);
             positivoIB.setEnabled(false);
         }else if (v.getVoto() == 0){
-            Picasso.with(context).load(R.drawable.thumbsupnormal).transform(new CircleTransform()).into(positivoIB);
-            Picasso.with(context).load(R.drawable.thumbsdownnormal).transform(new CircleTransform()).into(negativoIB);
+            positivoIB.setImageResource(R.drawable.ic_thumb_up_black_transparent_24dp);
+            negativoIB.setImageResource(R.drawable.ic_thumb_down_black_transparent_24dp);
         }
 
         negativoIB.setOnClickListener(new View.OnClickListener() {

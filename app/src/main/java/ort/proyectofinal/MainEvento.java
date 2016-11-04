@@ -2,6 +2,7 @@ package ort.proyectofinal;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.LightingColorFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -57,7 +59,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     private View salirfab, agregarobjetofab, three, four;
     private ListView list, listparticipantes, listvotaciones;
     private View fab;
-    ImageButton imgevento;
+    ImageView imgevento;
     ArrayList<Objeto> objetos;
     ArrayList<Usuario> friends;
     ArrayList<Participante> participantes;
@@ -76,7 +78,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         TVdescripcion = (TextView) findViewById(R.id.descripcion);
         TVfecha = (TextView) findViewById(R.id.fecha);
         TVlugar = (TextView) findViewById(R.id.lugar);
-        imgevento = (ImageButton) findViewById(R.id.imagen_evento);
+        imgevento = (ImageView) findViewById(R.id.imagen_evento);
 
         Bundle extras = getIntent().getExtras();
         e = (Evento) extras.getSerializable("evento");
@@ -84,9 +86,15 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         listparticipantes = (ListView) findViewById(R.id.listparticipantes);
         listvotaciones = (ListView) findViewById(R.id.listvotaciones);
         setSupportActionBar(toolbar);
-        String fecha = e.getFecha().substring(0, 10);
+        String fecha = e.getFecha();
         TVfecha.setText(fecha);
-        TVlugar.setText(e.getLugar());
+        if(e.getLugar().indexOf(",") == -1){
+            TVlugar.setText(e.getLugar());
+        }else{
+            int posicion = e.getLugar().indexOf(",");
+            String lugar = e.getLugar().toString().substring(0, posicion);
+            TVlugar.setText(lugar);
+        }
         Picasso.with(getApplicationContext()).load(R.drawable.evento_default).transform(new CircleTransform()).into(imgevento);
 
         objetos = new ArrayList<>();
@@ -118,6 +126,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
         new ObjetosTask().execute(url);
         new VotacionesTask().execute();
         facebookfriends();
+
     }
 
     private void setupToolbar() {
@@ -181,7 +190,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
                 final String nombre = edt.getText().toString();
                 final int precio = Integer.parseInt(edt2.getText().toString());
-                if(nombre.equals("") || precio <0 || String.valueOf(precio).equals("")){
+                if(nombre.equals("") || precio <0 || edt2.getText().toString().length() == 0){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
                 }else {
                     if (spinner.getSelectedItem().toString() == "Sin Asignar") {
@@ -204,23 +213,20 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     }
 
     public void showChangeLangDialogParticipante() {
-
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.agregar_participante, null);
         dialogBuilder.setView(dialogView);
 
         dialogBuilder.setTitle("Agregar Nuevo Participante");
-        dialogBuilder.setPositiveButton("Listo", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
-        dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
         ImageButton button = (ImageButton)dialogView.findViewById(R.id.button);
         button.setImageResource(R.drawable.ic_person_add_black_24dp);
+        button.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,9 +234,10 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 final String nombre = edt.getText().toString();
                 if(nombre.equals("")){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
+                }else{
+                    Usuario personavirtual = new Usuario("personavirtual",nombre);
+                    AgregarParticipante(personavirtual);
                 }
-                Usuario personavirtual = new Usuario("personavirtual",nombre);
-                AgregarParticipante(personavirtual);
             }
         });
         adapter = new FriendAdapter(this,friends);
@@ -252,9 +259,9 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(DialogInterface dialog, int whichButton) {
                 final EditText preguntaET = (EditText) dialogView.findViewById(R.id.preguntaET);
                 String pregunta = preguntaET.getText().toString();
-                if(pregunta.equals("")){
+                if(pregunta.length() == 0){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
-                }else {
+                }else{
                     AgregarPreguntaSQL(pregunta);
                 }
             }
@@ -471,7 +478,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     }
 
     public void facebookfriends() {
-
         GraphRequest gr = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/"+accessToken.getUserId()+"/friends",
@@ -491,27 +497,19 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                     String n=o.getString("name");
                                     String id=o.getString("id");
                                     Usuario f=new Usuario(id,n);
-                                    for(Participante p : participantes){
-                                        if(p.getIdFacebook().equals(f.getIdFacebook())){
-                                            friends.remove(f);
-                                            existe=true;
-                                            break;
-                                        }
-                                    }
-                                    if(existe==false){
-                                        friends.add(f);
-                                    }
+                                    friends.add(f);
                                 }
                             }catch(JSONException e){
                                 e.printStackTrace();
                             }
+
+                            recorrerFriends();
                             //adapter.notifyDataSetChanged();
                         }
                     }
                 }
         );
         gr.executeAsync();
-
     }
 
     private class ParticipantesTask extends AsyncTask<String, Void, ArrayList<Participante>> {
@@ -558,6 +556,18 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             return participantes;
         }
 
+    }
+
+
+    public void recorrerFriends(){
+        for(Usuario friend : friends){
+            for(Participante p : mEvento.participantes){
+                if(p.getIdFacebook().equals(friend.getIdFacebook())){
+                    friends.remove(friend);
+                    break;
+                }
+            }
+        }
     }
 
     public void ActualizarObjetoTask(){
