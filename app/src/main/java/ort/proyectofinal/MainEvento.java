@@ -484,7 +484,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     public void facebookfriends() {
         GraphRequest gr = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/"+accessToken.getUserId()+"/friends",
+                "/"+accessToken.getUserId()+"/invitable_friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
@@ -496,7 +496,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                 JSONArray d=jsonObject.getJSONArray("data");
                                 int l=(d!=null?d.length():0);
                                 for(int i=0;i<l;i++){
-                                    boolean existe = false;
                                     JSONObject o=d.getJSONObject(i);
                                     String n=o.getString("name");
                                     String id=o.getString("id");
@@ -507,8 +506,8 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                                 e.printStackTrace();
                             }
 
-                            recorrerFriends();
-                            adapter.notifyDataSetChanged();
+                            //recorrerFriends();
+                            //adapter.notifyDataSetChanged();
                         }
                     }
                 }

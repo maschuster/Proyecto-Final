@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import ort.proyectofinal.Clases.Usuario;
 
@@ -62,9 +63,9 @@ public class MainActivity extends FragmentActivity {
         }
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends");
+        /*loginButton.setReadPermissions("user_friends");
         loginButton.setReadPermissions("public_profile");
-        loginButton.setReadPermissions("email");
+        loginButton.setReadPermissions("email");*/
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -85,6 +86,7 @@ public class MainActivity extends FragmentActivity {
                         // App code
                     }
                 });
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_friends","public_profile","email","invitable_friends"));
     }
 
     @Override

@@ -99,11 +99,11 @@ public class ParticipanteAdapter extends BaseAdapter {
         gastoTV.setText(String.valueOf(gastos));
         if(gastos>totaldividido){
             debeoledebenvalue.setText(String.valueOf(debeoledeben));
-            debeoledebenvalue.setTextColor(Color.RED);
+            debeoledebenvalue.setTextColor(Color.GREEN);
         }
         if(gastos<totaldividido){
             debeoledebenvalue.setText(String.valueOf(debeoledeben));
-            debeoledebenvalue.setTextColor(Color.GREEN);
+            debeoledebenvalue.setTextColor(Color.RED);
         }
         if(gastos==totaldividido){
             debeoledebenvalue.setText(String.valueOf(debeoledeben));
