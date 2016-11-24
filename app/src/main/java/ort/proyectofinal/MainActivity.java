@@ -86,7 +86,7 @@ public class MainActivity extends FragmentActivity {
                         // App code
                     }
                 });
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_friends","public_profile","email","invitable_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_friends","public_profile","email"));
     }
 
     @Override

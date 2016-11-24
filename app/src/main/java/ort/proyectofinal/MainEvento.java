@@ -189,7 +189,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 EditText edt2 = (EditText) dialogView.findViewById(R.id.precio);
                 final String nombre = edt.getText().toString();
-                if(nombre.equals("") || edt2.getText().toString().length() == 0){
+                if(nombre.equals("") || edt2.getText().toString().length() == 0 || nombre.trim().equals("") || edt.getText().toString().trim().equals("")){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
                 }else {
                     final int precio = Integer.parseInt(edt2.getText().toString());
@@ -236,11 +236,22 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(View v) {
                 EditText edt = (EditText) dialogView.findViewById(R.id.nombre);
                 final String nombre = edt.getText().toString();
-                if(nombre.equals("")){
+                if(nombre.equals("") || nombre.trim().equals("")){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
                 }else{
-                    Usuario personavirtual = new Usuario("personavirtual",nombre);
-                    AgregarParticipante(personavirtual);
+                    boolean existe = false;
+                    for(Participante p : mEvento.participantes){
+                        if(p.getNombre().equals(nombre)){
+                            existe = true;
+                            break;
+                        }
+                    }
+                    if(existe==true){
+                        Toast.makeText(mEvento, "Ese usuario ya fue agregado", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Usuario personavirtual = new Usuario("personavirtual",nombre);
+                        AgregarParticipante(personavirtual);
+                    }
                 }
             }
         });
@@ -263,7 +274,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             public void onClick(DialogInterface dialog, int whichButton) {
                 final EditText preguntaET = (EditText) dialogView.findViewById(R.id.preguntaET);
                 String pregunta = preguntaET.getText().toString();
-                if(pregunta.length() == 0){
+                if(pregunta.length() == 0 || pregunta.trim().equals("")){
                     Toast.makeText(MainEvento.this, "Debes completar todos los campos", Toast.LENGTH_SHORT).show();
                 }else{
                     AgregarPreguntaSQL(pregunta);
@@ -484,7 +495,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
     public void facebookfriends() {
         GraphRequest gr = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/"+accessToken.getUserId()+"/invitable_friends",
+                "/"+accessToken.getUserId()+"/friends",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
@@ -561,17 +572,6 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
 
     }
 
-
-    public void recorrerFriends(){
-        for(Usuario friend : friends){
-            for(Participante p : mEvento.participantes){
-                if(p.getIdFacebook().equals(friend.getIdFacebook())){
-                    friends.remove(friend);
-                    break;
-                }
-            }
-        }
-    }
 
     public void ActualizarObjetoTask(){
         new ObjetosTask().execute(url);

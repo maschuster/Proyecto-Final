@@ -4,14 +4,21 @@ package ort.proyectofinal;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.media.Image;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +33,9 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -35,13 +44,19 @@ import com.squareup.okhttp.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import ort.proyectofinal.Clases.AutocompleteCustomArrayAdapter;
 import ort.proyectofinal.Clases.CustomAutoCompleteTextChangedListener;
@@ -51,10 +66,14 @@ import ort.proyectofinal.Clases.Evento;
 
 public class AgregarEvento extends AppCompatActivity {
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static public int REQUEST_IMAGE_GET = 2;
+    //static final int REQUEST_TAKE_PHOTO = 3;
+    ImageButton ibfoto;
     EditText nombreET, descripcionET;
     ArrayList<Evento> eventos;
     AccessToken accessToken;
-    TextView horaTV, fechaTV;
+    TextView horaTV, fechaTV, uriTV;
     String nombre,lugar,descripcion,fecha,hora;
     String url ="http://eventospf2016.azurewebsites.net/agregarevento.php";
 
@@ -107,6 +126,8 @@ public class AgregarEvento extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        uriTV = (TextView) findViewById(R.id.uriTV);
+        ibfoto = (ImageButton) findViewById(R.id.ibfoto);
         nombreET = (EditText) findViewById(R.id.nombre);
         descripcionET = (EditText) findViewById(R.id.descripcion);
         fechaTV = (TextView) findViewById(R.id.fecha);
@@ -127,17 +148,31 @@ public class AgregarEvento extends AppCompatActivity {
                 DialogHora();
             }
         });
+
+        ibfoto.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, REQUEST_IMAGE_GET);
+                }
+            }
+    });
     }
+
     private void setupToolbar() {
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         // Hide the title
         getSupportActionBar().setTitle(null);
         // Set onClickListener to customView
-        TextView tvSave = (TextView) findViewById(R.id.toolbar_save);
+        final TextView tvSave = (TextView) findViewById(R.id.toolbar_save);
         tvSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tvSave.setEnabled(false);
                 nombre = nombreET.getText().toString();
                 lugar = myAutoComplete.getText().toString();
                 descripcion = descripcionET.getText().toString();
@@ -145,7 +180,7 @@ public class AgregarEvento extends AppCompatActivity {
                 hora = horaTV.getText().toString();
                 if (nombre.length() > 0 | descripcion.length() > 0 | lugar.length() > 0)
                 {
-                    AgregarEvento();
+                    new AgregarEventoTask().execute();
                 }else{
                     Toast.makeText(AgregarEvento.this, "Debe llenar todos los campos", Toast.LENGTH_SHORT).show();
                 }
@@ -275,39 +310,33 @@ public class AgregarEvento extends AppCompatActivity {
         }
 
 
-
-
-
-    private class CrearEvento extends AsyncTask<String, Void, String> {
+    private class AgregarEventoTask extends AsyncTask<String, Void, String> {
         private OkHttpClient client = new OkHttpClient();
+
+        @Override
+        protected void onPreExecute() {
+            //progressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected void onPostExecute(String resultado) {
             super.onPostExecute(resultado);
-            Intent intent = new Intent(AgregarEvento.this, ListEventos.class);
-            startActivity(intent);
-            Toast registro;
-            if (!resultado.isEmpty()) {
-                if (resultado.equals("NO")) {
-                    registro = Toast.makeText(AgregarEvento.this, "Hubo un error, intente en un instante", Toast.LENGTH_SHORT);
-                } else {
-                    registro = Toast.makeText(AgregarEvento.this, "Evento Creado", Toast.LENGTH_SHORT);
-                    startActivity(intent);
-                }
-                registro.show();
-            }
+            //progressBar.setVisibility(View.GONE);
         }
 
         @Override
         protected String doInBackground(String... params) {
+            RequestBody body = null;
             try {
-                RequestBody body = generarJSON();
-
+                body = generarJSON();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             Request request = new Request.Builder()
-                    .url(url)
+                    .url("\"http://eventospf2016.azurewebsites.net/agregarevento.php\"")
                     .post(body)
                     .build();
-
+            try {
                 Response response = client.newCall(request).execute();
                 return parsearRespuesta(response.body().string());
             } catch (IOException | JSONException e) {
@@ -316,31 +345,136 @@ public class AgregarEvento extends AppCompatActivity {
             }
         }
 
-        RequestBody generarJSON() throws JSONException {
-            JSONObject json = new JSONObject();
-            json.put("idAdmin", String.valueOf(accessToken.getUserId()));
-            json.put("nombre", nombre);
-            json.put("fecha", fecha+" "+hora+":00");
-            json.put("lugar", lugar);
-            json.put("descripcion", descripcion);
-            json.put("foto", "foto.jpg");
 
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+    RequestBody generarJSON() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("idAdmin", String.valueOf(accessToken.getUserId()));
+        json.put("nombre", nombre);
+        json.put("fecha", fecha+" "+hora+":00");
+        json.put("lugar", lugar);
+        json.put("descripcion", descripcion);
 
-            return body;
+        if (uriTV.getText() != null && !uriTV.getText().toString().isEmpty()) {
+            Bitmap finalImage;
+            if (Uri.parse(uriTV.getText().toString()).getScheme().startsWith("http")) {
+                finalImage = getBitmapFromURL(uriTV.getText().toString());
+            } else {
+                // Get Bitmap image from Uri
+                try {
+
+                    ParcelFileDescriptor parcelFileDescriptor =
+                            getApplicationContext().getContentResolver().openFileDescriptor(Uri.parse(uriTV.getText().toString()), "r");
+                    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+
+
+/* esto reduce tamaño del bitmap */
+                    BitmapFactory.Options o = new BitmapFactory.Options();
+                    o.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFileDescriptor(fileDescriptor, null, o);
+
+                    // The new size we want to scale to
+                    final int REQUIRED_SIZE=200;
+
+                    // Find the correct scale value. It should be the power of 2.
+                    int scale = 1;
+                    while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                            o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                        scale *= 2;
+                    }
+
+                    // Decode with inSampleSize
+                    BitmapFactory.Options o2 = new BitmapFactory.Options();
+                    o2.inSampleSize = scale;
+
+                    Bitmap originalImage =  BitmapFactory.decodeFileDescriptor(fileDescriptor, null, o2);
+                    parcelFileDescriptor.close();
+                    finalImage = originalImage;
+                } catch (java.io.IOException e){
+                    e.getMessage();
+                    return null;
+                }
+
+            }
+            // Convert bitmap to output string
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            finalImage.compress(Bitmap.CompressFormat.PNG, 100, stream);   // Compress to PNG lossless
+            byte[] byteArray = stream.toByteArray();
+
+            String fileName = UUID.randomUUID().toString() + ".png";
+
+
+            String base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            json.put("foto",base64pic);
+            //mpb.addPart(Headers.of("Content-Disposition", "form-data; name=\"image\"; filename=\"" + fileName + "\""),
+            //  RequestBody.create(MEDIA_TYPE_PNG, byteArray));
+
         }
 
-        String parsearRespuesta(String JSONstr) throws JSONException {
-            org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
-            if (respuesta.has("Mensaje")) {
-                String msj = respuesta.getString("Mensaje");
-                return msj;
-            } else {
-                String error = respuesta.getString("Error");
-                return error;
-            }
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+
+        return body;
+    }
+
+    String parsearRespuesta(String JSONstr) throws JSONException {
+        org.json.JSONObject respuesta = new org.json.JSONObject(JSONstr);
+        if (respuesta.has("id")) {
+            String id = respuesta.getString("id");
+            return id;
+        } else {
+            String error = respuesta.getString("Error");
+            return error;
         }
     }
+
+    private void addMultipartField(MultipartBuilder mpb, String value, String fieldname){
+        if (!value.isEmpty())
+            mpb.addPart(Headers.of("Content-Disposition", "form-data; name=\""+fieldname+"\""),
+                    RequestBody.create(null, value));
+
+    }
+
+    private Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
+
+
+}
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_GET && resultCode == this.RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                ibfoto.setImageBitmap(bitmap);
+                uriTV.setText(uri.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == this.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ibfoto.setImageBitmap(imageBitmap);
+            //setPic();
+            //galleryAddPic();
+        }
+    }
+
+
 
 }
 

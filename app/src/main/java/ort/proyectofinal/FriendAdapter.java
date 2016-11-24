@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -79,8 +80,19 @@ public class FriendAdapter extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean existe = false;
                 Usuario f = friends.get(position);
-                mEvento.AgregarParticipante(f);
+                for(Participante p : mEvento.participantes){
+                    if(p.getIdFacebook().equals(f.getIdFacebook())){
+                        existe = true;
+                        break;
+                    }
+                }
+                if(existe==true){
+                    Toast.makeText(mEvento, "Ese usuario ya fue agregado", Toast.LENGTH_SHORT).show();
+                }else{
+                    mEvento.AgregarParticipante(f);
+                }
             }
         });
 

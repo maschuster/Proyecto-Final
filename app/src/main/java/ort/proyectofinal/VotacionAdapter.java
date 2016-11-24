@@ -110,6 +110,7 @@ public class VotacionAdapter  extends BaseAdapter {
                 negativoIB.setEnabled(false);
                 positivoIB.setEnabled(false);
                 if(v.getVoto() == 0){
+                    v.setVoto(2);
                     voto = 2;
                     posicion = position;
                     for (Participante p: (mEvento).participantes) {
@@ -129,6 +130,7 @@ public class VotacionAdapter  extends BaseAdapter {
                 negativoIB.setEnabled(false);
                 positivoIB.setEnabled(false);
                 if(v.getVoto() == 0){
+                    v.setVoto(1);
                     voto = 1;
                     posicion = position;
                     for (Participante p: (mEvento).participantes) {

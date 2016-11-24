@@ -138,6 +138,28 @@
                 android:maxLength="100"
                 android:hint="Descripción" />
 
+            <TextView
+                android:layout_marginTop="25dp"
+                android:drawableLeft="@drawable/ic_add_a_photo_black_24dp"
+                android:drawablePadding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_marginLeft="15dp"
+                android:hint="Foto" />
+
+            <ImageButton
+                android:layout_marginLeft="15dp"
+                android:layout_width="200dp"
+                android:layout_height="160dp"
+                android:id="@+id/ibfoto"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/uriTV"
+                android:visibility="gone"/>
+
         </LinearLayout>
 
     </ScrollView>
