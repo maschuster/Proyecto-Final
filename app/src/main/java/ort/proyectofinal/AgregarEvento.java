@@ -322,6 +322,8 @@ public class AgregarEvento extends AppCompatActivity {
         protected void onPostExecute(String resultado) {
             super.onPostExecute(resultado);
             //progressBar.setVisibility(View.GONE);
+            Intent intent = new Intent(getApplicationContext(), ListEventos.class);
+            startActivity(intent);
         }
 
         @Override
