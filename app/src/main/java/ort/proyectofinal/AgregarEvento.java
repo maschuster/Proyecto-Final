@@ -40,6 +40,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +60,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ort.proyectofinal.Clases.AutocompleteCustomArrayAdapter;
+import ort.proyectofinal.Clases.CircleTransform;
 import ort.proyectofinal.Clases.CustomAutoCompleteTextChangedListener;
 import ort.proyectofinal.Clases.CustomAutoCompleteView;
 import ort.proyectofinal.Clases.Evento;
@@ -149,6 +151,7 @@ public class AgregarEvento extends AppCompatActivity {
             }
         });
 
+        Picasso.with(this).load(R.drawable.camara).into(ibfoto);
         ibfoto.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -335,7 +338,8 @@ public class AgregarEvento extends AppCompatActivity {
                 e.printStackTrace();
             }
             Request request = new Request.Builder()
-                    .url("\"http://eventospf2016.azurewebsites.net/agregarevento.php\"")
+                    .addHeader("X-USER-ID",accessToken.getUserId())
+                    .url("http://eventospf2016.azurewebsites.net/agregarevento.php")
                     .post(body)
                     .build();
             try {

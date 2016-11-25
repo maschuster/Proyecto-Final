@@ -5,10 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import ort.proyectofinal.Clases.CircleTransform;
 import ort.proyectofinal.Clases.Evento;
 
 /**
@@ -51,11 +55,14 @@ public class EventosAdapter extends BaseAdapter {
 
         TextView nombreTV = (TextView)view.findViewById(R.id.nombre);
         TextView fechaTV = (TextView)view.findViewById(R.id.fechaeventolist);
+        ImageView imagenTV = (ImageView)view.findViewById(R.id.imagen_list_evento);
 
         Evento e = eventos.get(position);
 
         nombreTV.setText(String.valueOf(e.getNombre()));
         fechaTV.setText(String.valueOf(e.getFecha()));
+        Picasso.with(context).load(e.getFoto()).transform(new CircleTransform()).into(imagenTV);
+
         return view;
     }
 }

@@ -95,7 +95,7 @@ public class MainEvento extends AppCompatActivity implements View.OnClickListene
             String lugar = e.getLugar().toString().substring(0, posicion);
             TVlugar.setText(lugar);
         }
-        Picasso.with(getApplicationContext()).load(R.drawable.evento_default).transform(new CircleTransform()).into(imgevento);
+        Picasso.with(getApplicationContext()).load(e.getFoto()).transform(new CircleTransform()).into(imgevento);
 
         objetos = new ArrayList<>();
         participantes = new ArrayList<>();

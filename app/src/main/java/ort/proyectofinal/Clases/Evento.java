@@ -11,13 +11,15 @@ public class Evento implements Serializable{
     String descripcion;
     String nombre;
     String lugar;
+    String foto;
 
-    public Evento(int idEvento, String nombre, String fecha, String descripcion, String lugar) {
+    public Evento(int idEvento, String nombre, String fecha, String descripcion, String lugar, String foto) {
         this.idEvento = idEvento;
         this.fecha = fecha;
         this.descripcion = descripcion;
         this.nombre = nombre;
         this.lugar = lugar;
+        this.foto = foto;
     }
 
     public int getIdEvento() {
@@ -58,6 +60,14 @@ public class Evento implements Serializable{
 
     public void setLugar(String lugar) {
         this.lugar = lugar;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void getFoto(String foto) {
+        this.foto = foto;
     }
 }
 

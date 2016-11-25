@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class ListEventos extends AppCompatActivity {
     ProfilePictureView profilePictureView;
     ImageView profile_pic;
     private TextView navUserName;
-    TextView TVnombre,TVfecha, TVlugar, TVdescripcion;
+    TextView TVnombre,TVfecha, TVlugar, TVdescripcion, TVeventos;
     ListView listVW;
     ArrayList<Evento> eventos;
     AccessToken accessToken;
@@ -76,6 +77,7 @@ public class ListEventos extends AppCompatActivity {
         TVnombre = (TextView) findViewById(R.id.nombre);
         TVfecha = (TextView) findViewById(R.id.fecha);
         TVlugar = (TextView) findViewById(R.id.lugar);
+        TVeventos = (TextView) findViewById(R.id.textlist);
         eventos = new ArrayList<>();
         listVW = (ListView) findViewById(R.id.listVw);
         TVdescripcion = (EditText) findViewById(R.id.descripcion);
@@ -170,8 +172,10 @@ public class ListEventos extends AppCompatActivity {
                 eventos = eventosResult;
                 EventosAdapter adapter = new EventosAdapter(getApplicationContext(),eventosResult);
                 listVW.setAdapter(adapter);
-                progressBar.setVisibility(View.GONE);
+            }else{
+                TVeventos.setVisibility(View.VISIBLE);
             }
+            progressBar.setVisibility(View.GONE);
         }
 
         @Override
@@ -200,9 +204,11 @@ public class ListEventos extends AppCompatActivity {
                 String fecha = jsonResultado.getString("fecha");
                 String descripcion = jsonResultado.getString("descripcion");
                 String lugar = jsonResultado.getString("lugar");
+                String foto = jsonResultado.getString("foto");
 
-                Evento e = new Evento(idEvento,nombre,fecha,descripcion,lugar);
+                Evento e = new Evento(idEvento,nombre,fecha,descripcion,lugar,foto);
                 eventos.add(e);
+
             }
             return eventos;
         }
